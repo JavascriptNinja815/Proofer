@@ -1,0 +1,67 @@
+#posts-container {
+  margin: 0!important;
+}
+#posts-wrapper {
+  margin-top: 3em!important;
+}
+.page-wrapper.posts-page {
+  .loader-wrapper {
+    position: absolute;
+    width: 100%;
+    left: 0;
+  }
+}
+
+.scroll-sticky-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 0.85em;
+  background-color: #222;
+  padding: 0 1em;
+  .scroll-date {
+    width: 40%;
+    height: 44px;
+    overflow: hidden;
+    max-width: 32%;
+  }
+  .scroll-month {
+    width: 35%;
+    color: #ffffff;
+    font-size: 1.2em;
+    text-align: center;
+    i.icon {
+      cursor: pointer;
+    }
+  }
+  .scroll-actions {
+    width: 25%;
+  }
+  .scrollspy-div {
+  	list-style-type: none;
+  	background: #fff;
+  	text-align: center;
+  	border-radius: 10px;
+  	position: fixed;
+  }
+
+  .scrollspy-item {
+  	//border-bottom: 1px solid #F6F7FB;
+  	height: auto;
+    width: 100%;
+    font-size: 1.3em;
+  }
+
+  .day-link {
+  	color: #f9f9f9;
+    display: block;
+    padding: 0.8em 0.2em 0.8em 0;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: bold;
+    i.icon {
+      margin-left: 0!important;
+    }
+  }
+}

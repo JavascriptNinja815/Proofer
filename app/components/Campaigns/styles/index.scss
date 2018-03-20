@@ -1,0 +1,125 @@
+@import '../../variables';
+
+.ui.grid {
+  .column.campaigns-panel {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    height: calc(100% - #{$header-height});
+    border: 1px solid #D6D6D6;
+    .campaigns-header {
+      height: 3em;
+      min-height: 3em;
+      padding: 2em 1em;
+      color: #000000;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 6px 0 rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 1px solid #D6D6D6;
+      border-bottom: 1px solid #D6D6D6;
+      .title {
+        font-weight: bold;
+        font-size: 1.3em;
+      }
+    }
+    .campaigns-content {
+      position: relative;
+      width: 100%;
+      background-color: #F2F2F2;
+      padding: 0;
+      overflow-y: auto;
+      height: calc(100vh - 100px);
+      border-left: 1px solid #D6D6D6;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 6px 0 rgba(0,0,0,0.1);
+      .campaigns-items {
+        display: none;
+        &.show {
+          display: block;
+        }
+      }
+      .campaigns-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(214, 214, 214, 0.5);
+        & > * {
+          display: flex;
+          align-items: center;
+        }
+        width: 100%;
+        padding: 1.5em;
+        font-size: 0.85em;
+        i.icon.heart {
+          margin: 0;
+          margin-left: 0.5em;
+          margin-top: -1em;
+        }
+        .bold-number, .thin-number {
+          padding: 0.35em;
+          font-size: 1.3em;
+        }
+        .bold-number {
+          font-weight: bold;
+        }
+        .thin-number {
+          font-weight: 100;
+        }
+        .campaigns-title {
+          width: 7em;
+          font-size: 1.3em;
+          font-weight: bold;
+          .campaigns-color {
+            height: 40px;
+            width: 6px;
+            margin-right: 0.5em;
+            border-radius: 5px;
+            background-color: #E2E2E2;
+          }
+        }
+        .campaigns-posts {
+
+        }
+        .campaigns-likes {
+          border-left: 1px solid #EEEEEE;
+          border-right: 1px solid #EEEEEE;
+          padding: 0 0.5em 0 1em;
+        }
+        .campaigns-freshness {
+          width: 7.5em;
+        }
+      }
+    }
+  }
+}
+
+.post-short-item {
+  padding: 1em;
+  border-bottom: 1px solid #D6D6D6;
+  i.icon {
+    color: #C3C3C3;
+    margin-right: 0.15em;
+    &.heart {
+      color: #E8363B;
+    }
+    &.refresh {
+      color: #3B7ADB;
+    }
+  }
+  .post-short-content {
+    padding: 0 1em;
+    .post-short-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .social-stat > span {
+        margin-right: 0.3em;
+      }
+    }
+    .post-short-desc {
+      margin-top: 0.5em;
+    }
+  }
+}

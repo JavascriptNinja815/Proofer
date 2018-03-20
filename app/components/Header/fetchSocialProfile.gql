@@ -1,0 +1,17 @@
+query team ($id: ID!) {
+  team(id: $id) {
+      id
+      name
+      socialProfiles {
+          edges{
+            node{
+                id
+                name
+                socialNetwork
+                profilePicture
+                facebookPageName
+            }
+          }
+      }
+  }
+}

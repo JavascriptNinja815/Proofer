@@ -1,0 +1,51 @@
+query ($profileIds: [ID]!, $categoryIds: [ID], $type: CalendarSlotType) {
+  calendarSlots_find(profileIds: $profileIds, categoryIds: $categoryIds, type: $type) {
+    edges {
+      node {
+        id
+        day
+        time
+        type
+        category {
+          name
+          color
+          id
+        }
+        socialProfile {
+          name
+          id
+          socialNetwork
+          facebookPageName
+        }
+        contentSchedules {
+          id
+          publishAt
+          content {
+            id
+            text
+            media {
+              id
+              url
+            }
+            comments{
+              edges{
+                node{
+                  id
+                  text
+                  createdAt
+                  user{
+                    id
+                    firstName
+                    lastName
+                    email
+                  }
+                }
+              }
+            }
+          }
+        }
+        __typename
+      }
+    }
+  }
+}

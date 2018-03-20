@@ -1,0 +1,22 @@
+.pr-progress {
+    width: 2.5em;
+    margin: 0 0.35em;
+    .CircularProgressbar-path {
+      stroke: #2AE299;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease 0s;
+    }
+    .CircularProgressbar-trail {
+      stroke: #BDBDBD;
+    }
+    .CircularProgressbar-text {
+      fill: #000000;
+      font-size: 3.5em;
+      font-weight: 200;
+      dominant-baseline: middle;
+      text-anchor: middle;
+    }
+    .CircularProgressbar-background {
+      fill: #d6d6d6;
+    }
+  }

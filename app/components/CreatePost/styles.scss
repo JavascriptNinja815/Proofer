@@ -1,0 +1,178 @@
+.ui.small.modal.post-item-pane{
+  .scrolling.content {
+    padding: 0!important;
+    overflow: visible;
+  }
+}
+.post-item-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #FFFFFF;
+
+  .post-item-datetime {
+    width: 120px;
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: bold;
+    img {
+      width: 24px;
+    }
+    .date-time-label {
+      margin-top: 0.75em;
+    }
+  }
+  .post-item-content {
+    width: 100%;
+    .ui.attached.menu {
+      height: 30px;
+      .item {
+        width: 33.333%;
+        text-align: center;
+        font-size: 1.2em;
+        padding: 10px;
+        border-top-width: 0;
+        border-radius: 0!important;
+        border-left-color: #d4d4d5;
+        &.active {
+          border-right-color: transparent;
+        }
+        .icon.twitter {
+          color: #1DADEB;
+        }
+        .icon.facebook {
+          color: #CECECE;
+        }
+        .icon.instagram {
+          color: #CECECE;
+        }
+      }
+    }
+    .post-item-content-wrapper, .post-item-pane {
+      padding: 1em;
+      &.active {
+        background-color: #FFFFFF;
+      }
+
+      .post-item-media {
+        padding: 1em;
+        border-top: 1px solid #D6D6D6;
+        border-radius: 0 0 4px 4px;
+        display: none;
+        &.active {
+          display: block;
+        }
+        .image-grid {
+          display: flex!important;
+          align-items: center;
+          img.ui.image {
+            max-width: 10em;
+          }
+          &.col-1 {
+            .content-media {
+              max-width: 160px;
+              margin: 0 0.5em 0 0;
+            }
+          }
+          &.col-2 {
+            .content-media {
+              width: 47%;
+              height: 100%;
+              max-height: 220px;
+              margin: 0 0.5em 0.5em 0;
+            }
+          }
+          &.col-3, &.col-4, &.col-5, &.col-6, &.col-7, &.col-8 {
+            .content-media {
+              width: 30%;
+              height: 100%;
+              max-height: 150px;
+              margin: 0 0.5em 0.5em 0;
+            }
+          }
+        }
+        .image-action.edit {
+          font-size: 2em;
+          margin: 0 8px;
+          color: #C4C4C4;
+          cursor: pointer;
+        }
+        .content-media {
+          position: relative;
+          margin: 0 0.5em 0.5em 0;
+          img {
+            border-radius: 0.2em;
+          }
+          &:hover {
+            .image-action {
+              display: block;
+            }
+          }
+          .image-action {
+            display: none;
+            position: absolute;
+            top: 0.5em;
+            right: 0.5em;
+            width: 1.7em;
+            height: 1.7em;
+            padding: 0.12em 0.25em;
+            background-color: rgba(255,255,255,1);
+            border-radius: 500em;
+            cursor: pointer;
+            &:hover {
+              background-color: rgba(255,255,255,0.5);
+            }
+          }
+          i.icon {
+            font-size: 1em;
+            margin: 0;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+    .post-item-content-wrapper {
+      &.active {
+        border: 1px solid #D6D6D6;
+        border-radius: 4px;
+        background-color: #FFFFFF;
+        box-shadow: 0 2px 6px 0 rgba(0,0,0,0.1);
+      }
+    }
+    .post-item-pane {
+      border-top: none;
+      border-right: none;
+      border-bottom: none;
+      border-bottom-left-radius: 0;
+      .post-item-media.normal-state {
+        padding: 0;
+        padding-top: 1em;
+        border: none;
+      }
+    }
+    .post-item-actions {
+      display: flex;
+      align-items: center;
+      margin-top: 1em;
+      position: relative;
+      .post-short-stat {
+        width: 15em;
+        color: #c8c8c8;
+        span {
+          margin-right: 4px;
+        }
+      }
+      .actions {
+        width: 100%;
+        text-align: right;
+        & > * {
+          display: inline-block;
+        }
+        .status {
+          margin-right: 8px;
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+}
