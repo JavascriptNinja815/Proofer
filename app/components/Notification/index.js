@@ -5,7 +5,7 @@ const Notification = {
     if (message.graphQLErrors) {
       notify.show(message.graphQLErrors[0].message, 'error', time)
     } else {
-      notify.show(message, 'error', time)
+      notify.show(message.replace('GraphQL error: ', ''), 'error', time)
     }
   },
   success: (message, time = 3000, notify = notifyDefault) => {

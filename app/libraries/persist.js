@@ -117,4 +117,4 @@ class persist {
   }
 }
 
-module.exports = persist
+export default persist

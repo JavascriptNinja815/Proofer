@@ -11,9 +11,7 @@ import { Draggable } from 'react-drag-and-drop'
 
 // const KEYS_TO_FILTERS = ['id']
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class AssetsList extends Component {
   constructor (props) {

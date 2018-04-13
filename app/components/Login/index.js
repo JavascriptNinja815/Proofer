@@ -3,7 +3,7 @@ import { graphql, withApollo, compose } from 'react-apollo'
 import gql from 'graphql-tag'
 
 import Link from 'next/link'
-import {Grid, Header, Form, Button, Message, Image, Transition} from 'semantic-ui-react'
+import {Grid, Header, Form, Button, Message} from 'semantic-ui-react'
 import Notification from '../Notification'
 
 import persist from '../../libraries/persist'
@@ -12,13 +12,9 @@ import initApollo from '../../libraries/apolloClient'
 
 import loginGql from './login.gql'
 import fetchTeamId from './fetchTeamId.gql'
-import Loader from '../Loader'
 import Logo from '../../static/images/proofer-logo.svg'
 
-
-if (process.env.BROWSER) {
-  require('../NoAuth.scss')
-}
+import '../NoAuth.scss'
 
 class Login extends React.Component {
   state = { email: '', password: '', load: false, userMessage: false }
@@ -131,7 +127,7 @@ class Login extends React.Component {
               </Message>
               }
               <Header className="custom-header">
-                <Logo width='80%' className='align-center custom-image-style' />
+                <Logo width='70%' className='align-center custom-image-style' />
               </Header>
               <Form onSubmit={this.handleSubmit.bind(this)} className="input-form">
                 <Form.Input required placeholder='Email' type='text' name='email' value={email} onChange={this.handleChange} className="input" />
@@ -148,9 +144,10 @@ class Login extends React.Component {
                   </a>
                 </Link>
                 <div className="secondary-action">
-                  {'Don\'t have an account yet?'}
+                  {'Don\'t have an account yet?  '}
+                  <Link prefetch href='/app/signup'><a className="register-button">Register</a></Link>
                 </div>
-                <Link prefetch href='/app/signup'><a className="register-button">Register</a></Link>
+
               </Form>
             </Grid.Column>
           </Grid.Row>

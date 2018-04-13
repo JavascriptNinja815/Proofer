@@ -1,20 +1,33 @@
 import React from 'react'
 import {Image, Button, Input} from 'semantic-ui-react'
 import AddAssets from '../AssetBank/AddAssets'
+import {hexToRGB} from '../../libraries/helpers'
 
-if (process.env.BROWSER) {
-  require('./dropdown.scss')
-}
+import './dropdown.scss'
 
 class AssetsDrop extends React.Component {
   constructor (props) {
     super(props)
+    let assets = []
+    this.props.assets.filter(item => {
+      item.node.categories.map(cat => {
+        if (this.props.categoryIds.includes(cat.id)) {
+          assets.push(item)
+        }
+      })
+    })
     this.state = {
       allAssets: this.props.assets,
-      assets: this.props.assets,
+      assets,
       allTags: this.props.tags,
-      tags: this.props.tags,
+      tags: new Map([...this.props.tags].filter(item => this.props.categoryIds.includes(item[1].id))),
       searchTerm: ''
+    }
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.assets.length !== this.props.assets.length) {
+      this.setState({assets: nextProps.assets})
     }
   }
 
@@ -32,12 +45,17 @@ class AssetsDrop extends React.Component {
     const assets = []
     this.state.allAssets.filter(item => {
       item.node.categories.map(cat => {
-        if (cat.name.includes(searchTerm)) {
+        if (cat.name.toLowerCase().includes(searchTerm.toLowerCase())) {
           assets.push(item)
         }
       })
     })
-    const tags = this.state.allTags.filter(item => item.name.includes(searchTerm))
+    let tags = new Map()
+    for ([tagId, tag] of this.state.allTags) {
+      if (tag.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        tags.set(tagId, tag)
+      }
+    }
     this.setState({
       assets,
       tags,
@@ -54,7 +72,12 @@ class AssetsDrop extends React.Component {
         }
       })
     })
-    const tags = this.state.allTags.filter(item => item.name === searchTerm)
+    let tags = new Map()
+    for ([tagId, tag] of this.state.allTags) {
+      if (tag.name === searchTerm) {
+        tags.set(tagId, tag)
+      }
+    }
     this.setState({
       assets,
       tags,
@@ -62,17 +85,9 @@ class AssetsDrop extends React.Component {
     })
   }
 
-  hexToRGB = (hex, opacity) => {
-    hex = parseInt(hex.slice(1), 16)
-    let r = hex >> 16
-    let g = hex >> 8 & 0xFF
-    let b = hex & 0xFF
-    return `rgba(${r},${g},${b},${opacity})`
-  }
-
   render () {
-    const {onSelectAsset, socialId} = this.props
-    const {assets, tags} = this.state
+    const {onSelectAsset, socialId, categoryIds} = this.props
+    const {assets, tags, allTags} = this.state
 
     return (
       <div className='add-assets-dropdown'>
@@ -85,13 +100,18 @@ class AssetsDrop extends React.Component {
           />
           <AddAssets
             socialId={socialId}
+            categoryIds={categoryIds}
+            onSelectAsset={onSelectAsset}
+            simpleUpload={this.props.simpleUpload}
+            onUpload={this.props.onUpload}
           />
         </div>
         <div className='asset-tags'>
-          {tags.map(tag => {
-            const backColor = this.hexToRGB(tag.color, 0.25)
-            const catColor = this.hexToRGB(tag.color, 1)
+          {Array.from(tags.values()).map((tag, index) => {
+            const backColor = hexToRGB(tag.color, 0.25)
+            const catColor = hexToRGB(tag.color, 1)
             return (<Button
+              key={index}
               className='asset-button'
               onClick={() => this.onSelectAssetTag(tag.name)}
               style={{backgroundColor: backColor, color: catColor}}
@@ -103,9 +123,9 @@ class AssetsDrop extends React.Component {
         </div>
         <div className='asset-list'>
           {assets.length > 0 ?
-            assets.map(asset => {
+            assets.map((asset, index) => {
               return (
-                <div className='asset-item' onClick={() => onSelectAsset(asset.node)}>
+                <div key={index} className='asset-item' onClick={() => onSelectAsset(asset.node)}>
                   <span className='asset-color-badge' style={{
                     zIndex: 10,
                     borderTop: `20px solid ${asset.node.categories[0] ? asset.node.categories[0].color : '#D6D6D6'}`,

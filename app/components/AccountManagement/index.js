@@ -9,9 +9,7 @@ import { editUser,changePassword } from './editMutation'
 import persist from '../../libraries/persist'
 import Notification from '../Notification/index'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class AccountManagement extends Component {
   constructor (props) {
@@ -24,11 +22,11 @@ class AccountManagement extends Component {
 	  visible: false,
 	  load:false
     }
-	
+
   this.saveFirstName = this.saveFirstName.bind(this);
   this.savePassword = this.savePassword.bind(this);
   }
-  
+
   saveFirstName() {
     const { editUser } = this.props;
     const { firstName,lastName,userId } = this.state;
@@ -38,7 +36,7 @@ class AccountManagement extends Component {
     });
     editUser({ userId,firstName,lastName })
     .then(() => {
-      this.setState({ 
+      this.setState({
         isSaving: false,
         editableFirstNameField:false,
 		editableLastNameField:false,
@@ -47,44 +45,43 @@ class AccountManagement extends Component {
       Notification.success('Saved Successfully');
     })
     .catch((e) => {
-      this.setState({ 
+      this.setState({
         isSaving: false,
 		load:false
       })
       Notification.error('Update Name Error');
     });
   }
-  
+
   savePassword() {
     const { changePassword } = this.props;
     const {oldPassword,newPassword,confirmPassword,email} = this.state;
-	if(newPassword==confirmPassword)
-    {
-		this.setState({
-		  isSaving: true,
-		  load:true
-		});
-		changePassword({ oldPassword,newPassword,email })
-		.then(() => {
-		   this.setState({ 
-			  isSaving: false,
-			  load:false
-			})
-			Notification.success('Saved Successfully');
-		})
-		.catch((e) => {
-			this.setState({ 
-				isSaving: false,
-				load:false
-			})
-			Notification.error('Update password Error');
-		});
-	}
-	else{
-		   Notification.error('password not match')
-		}
+	  if(newPassword==confirmPassword) {
+      this.setState({
+        isSaving: true,
+        load:true
+      });
+      changePassword({ oldPassword,newPassword,email })
+      .then(() => {
+        this.setState({
+          isSaving: false,
+          load:false
+        })
+        Notification.success('Saved Successfully');
+      })
+      .catch((e) => {
+        this.setState({
+          isSaving: false,
+          load:false
+        })
+        Notification.error('Update password Error');
+      });
+    }
+    else{
+      Notification.error('password not match')
+    }
   }
-  
+
   handleFirstNameClick = () => {
     const { data } = this.props;
     this.setState({
@@ -95,31 +92,31 @@ class AccountManagement extends Component {
       userId: data.me.id
     })
   }
-  
+
   handlePasswordClick = () => {
     const { data } = this.props;
     this.setState({
       updatePasswordField:true,
 	  email:data.me.email
-    })	
+    })
 	var self = this;
-    
+
       self.setState({visible: true});
-    
-    
+
+
       self.setState(self.getInitialState());
-    
+
   }
   handleModalClose = () => {
     const { data } = this.props;
     this.setState({
       updatePasswordField:true,
 	  email:data.me.email
-    })	
+    })
 	var self = this;
-    
+
       self.setState({visible: false});
-    
+
   }
   render () {
     const { firstName,lastName,oldPassword,newPassword,confirmPassword } = this.state;
@@ -128,10 +125,10 @@ class AccountManagement extends Component {
       return (<div />)
     }
     return (
-      <div className='page-wrapper'>
+      <div className='page-wrapper account-management'>
         <Grid centered>
           <Grid.Row>
-            <Grid.Column width={9} >	
+            <Grid.Column width={9} >
               <Header className="custom-header-long">
                 Account Settings
               </Header>
@@ -142,40 +139,40 @@ class AccountManagement extends Component {
               Name
             </Grid.Column>
             <Grid.Column width={3}>
-              <Form.Input placeholder='First Name' 
-                          type='text' 
-                          name='firstname' 
-                          className="input" 
-                          value={firstName || data.me.firstName } 
-                          disabled={!this.state.editableFirstNameField} 
-                          onChange={(event) => this.setState({ firstName:event.target.value })}  
+              <Form.Input placeholder='First Name'
+                          type='text'
+                          name='firstname'
+                          className="input"
+                          value={firstName || data.me.firstName }
+                          disabled={!this.state.editableFirstNameField}
+                          onChange={(event) => this.setState({ firstName:event.target.value })}
               />
             </Grid.Column>
-			
+
 			<Grid.Column width={3}>
-			  <Form.Input placeholder='Last Name' 
-                          type='text' 
-                          className="input" 
-                          name='lastname' 
-                          value={lastName || data.me.lastName} 
-                          disabled={!this.state.editableLastNameField} 
-                          onChange={(event) => this.setState({ lastName:event.target.value })}  
+			  <Form.Input placeholder='Last Name'
+                          type='text'
+                          className="input"
+                          name='lastname'
+                          value={lastName || data.me.lastName}
+                          disabled={!this.state.editableLastNameField}
+                          onChange={(event) => this.setState({ lastName:event.target.value })}
               />
 	   	    </Grid.Column>
        	    <Grid.Column width={2}>
               {
                 !this.state.editableLastNameField &&
-                  <Button icon='edit' 
-                          className='edit-content' 
-                          onClick={this.handleFirstNameClick} 
+                  <Button icon='edit'
+                          className='edit-content'
+                          onClick={this.handleFirstNameClick}
                   />
               }
               {
                 this.state.editableLastNameField &&
-                  <Button 
+                  <Button
 					icon='checkmark'
-                    className='save-content' 
-                    onClick={this.saveFirstName} 
+                    className='save-content'
+                    onClick={this.saveFirstName}
 					loading={this.state.load}
                   />
               }
@@ -186,26 +183,26 @@ class AccountManagement extends Component {
 			     Password
 			      </Grid.Column>
 			      <Grid.Column width={6}>
-			    	  <Form.Input 
-							placeholder='Password' 
-							type='password' 
-							name='lastname' 
-							className="input" 
-							value={lastName || data.me.lastName} 
-							disabled={!this.state.NameEnable}  
-							onChange={this.handleChange}  
+			    	  <Form.Input
+							placeholder='Password'
+							type='password'
+							name='lastname'
+							className="input"
+							value={lastName || data.me.lastName}
+							disabled={!this.state.NameEnable}
+							onChange={this.handleChange}
               />
 	   	      </Grid.Column>
-			  
+
             <Grid.Column width={2}>
-			        <Button 
-						icon='edit' 
-						className='edit-content' 
-						onClick={this.handlePasswordClick} 
+			        <Button
+						icon='edit'
+						className='edit-content'
+						onClick={this.handlePasswordClick}
 					/>
             </Grid.Column>
           </Grid.Row>
-		  
+
 		  <div>
 			<Modal size='tiny' open={this.state.visible} onClose={this.close} dimmer='inverted' >
 			 <i className='close icon' id='close' onClick={this.handleModalClose}/>
@@ -213,16 +210,16 @@ class AccountManagement extends Component {
 				<Grid centered>
 					<Grid.Row id='modal_center' textAlign='center'>
 						<Grid.Column width={4} textAlign='center' className='input-label'>
-							<label> Old Password</label> 
+							<label> Old Password</label>
 						</Grid.Column>
 						<Grid.Column width={6} textAlign='center'>
-							<Form.Input 
-								  placeholder='Password' 
-								  type='password' 
-								  name='oldPassword' 
-								  className="input"  
-								  disabled={this.state.NameEnable}  
-								  onChange={(event) => this.setState({ oldPassword:event.target.value })}  
+							<Form.Input
+								  placeholder='Password'
+								  type='password'
+								  name='oldPassword'
+								  className="input"
+								  disabled={this.state.NameEnable}
+								  onChange={(event) => this.setState({ oldPassword:event.target.value })}
 							/>
 						</Grid.Column>
 					</Grid.Row>
@@ -231,13 +228,13 @@ class AccountManagement extends Component {
 							<label> New Password</label>
 						</Grid.Column>
 						<Grid.Column width={6} textAlign='center'>
-							<Form.Input 
-								  placeholder='Password' 
-								  type='password' 
-								  name='newPassword' 
-								  className="input" 
-								  disabled={this.state.NameEnable}  
-								  onChange={(event) => this.setState({ newPassword:event.target.value })} 
+							<Form.Input
+								  placeholder='Password'
+								  type='password'
+								  name='newPassword'
+								  className="input"
+								  disabled={this.state.NameEnable}
+								  onChange={(event) => this.setState({ newPassword:event.target.value })}
 							/>
 						</Grid.Column>
 					</Grid.Row>
@@ -247,12 +244,12 @@ class AccountManagement extends Component {
 						</Grid.Column>
 						<Grid.Column width={6} textAlign='center'>
 							<Form.Input
-								  placeholder='Password' 
-								  type='password' 
-								  name='confirmPassword' 
-								  className="input"  
-								  disabled={this.state.NameEnable}  
-								  onChange={(event) => this.setState({ confirmPassword:event.target.value })}  
+								  placeholder='Password'
+								  type='password'
+								  name='confirmPassword'
+								  className="input"
+								  disabled={this.state.NameEnable}
+								  onChange={(event) => this.setState({ confirmPassword:event.target.value })}
 							/>
 						</Grid.Column>
 					  </Grid.Row>
@@ -260,12 +257,12 @@ class AccountManagement extends Component {
 			 </Modal.Content>
 			 <Modal.Actions>
 				<Button
-					negative 
+					negative
 					onClick={this.handleModalClose}>
 				  Cancel
 				</Button>
-				<Button 
-					positive 
+				<Button
+					positive
 					icon='checkmark'
 					labelPosition='right'
 					content='Update'
@@ -274,7 +271,7 @@ class AccountManagement extends Component {
 			 </Modal.Actions>
 			</Modal>
 		  </div>
-		 
+
         </Grid>
 	   </div>
     )

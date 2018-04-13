@@ -1,68 +1,85 @@
-import ApolloLink, { Observable } from 'apollo-link'
 import { createApolloFetch } from 'apollo-fetch'
 import persist from './persist'
+import { TokenRefreshLink } from 'apollo-link-token-refresh-before-refetch'
+import jwt_decode from 'jwt-decode'
 
-export default class JWTRefreshLink extends ApolloLink {
+export default class JWTRefreshLink {
   constructor (params) {
-    super()
-    this.failed = false
-    this.apolloFetch = createApolloFetch({ uri: params.uri })
-    const authData = {
-      token: params.token,
-      teamId: params.teamId,
-      refreshToken: params.refreshToken
-    }
+    const { uri, token, teamId, refreshToken } = params
+    this.apolloFetch = createApolloFetch({ uri })
     this.refreshOperation = {
       query: `mutation tokenRefresh($input: RefreshTokenInput!) {
-        tokenRefresh(input: $input) {
-          token
-        }
-      }`,
+      tokenRefresh(input: $input) {
+        token
+      }
+    }`,
       variables: {
         input: {
-          refreshToken: authData.refreshToken
+          refreshToken: refreshToken
         }
       },
       context: {
         headers: {
-          'authorization': authData.token ? `Bearer ${authData.token}` : null,
-          'X-Proof-TeamId': authData.teamId ? `${authData.teamId}` : `NONE`
+          'authorization': token ? `Bearer ${token}` : null,
+          'X-Proof-TeamId': teamId ? `${teamId}` : `NONE`
         }
       }
     }
   }
 
-  request (operation, forward) {
-    return new Observable(observer => {
-      const subscriber = {
-        next: data => {
-          if (data.code === 401 && data.message === 'Expired JWT Token') {
-            this.apolloFetch(this.refreshOperation)
-              .then(refreshData => {
-                if (refreshData.error) {
-                  console.error(refreshData.error)
-                } else {
-                  persist.willSetAccessToken(refreshData.data.tokenRefresh.token)
-                  operation.context.headers.authorization = `Bearer ${refreshData.data.tokenRefresh.token}`
-                  const observable = forward(operation)
-                  this.subscription = observable.subscribe(subscriber)
-                }
-              })
-          } else {
-            observer.next(data)
+  getLink = (storedToken) => {
+    return new TokenRefreshLink({
+      accessTokenField: 'token',
+      isTokenValidOrUndefined: () => {
+        const token = persist.willGetAccessToken() || storedToken
+        if (!token) return true
+        const decodedJwt = jwt_decode(token)
+        return Math.floor(Date.now() / 1000) - decodedJwt.exp <= -30
+
+      },
+      fetchAccessToken: () => {
+        return new Promise((resolve, reject) => {
+          this.apolloFetch(this.refreshOperation).then(result => {
+            // GraphQL errors and extensions are optional
+            const {data, errors, extensions} = result
+            if (!errors) {
+              const token = data.tokenRefresh.token
+              console.log('Refreshed token')
+              const init = {status: 200, statusText: 'ok'}
+              const response = new Response(JSON.stringify({token}), init)
+              resolve(response)
+            }
+          })
+            .catch(error => {
+              // respond to a network error
+              reject(error)
+            })
+        })
+      },
+      handleFetch: (token) => {
+        persist.willSetAccessToken(token)
+      },
+      beforeRefetch: (token, operation) => {
+        const oldContext = operation.getContext()
+        operation.setContext({
+          ...oldContext,
+          headers: {
+            ...oldContext.headers,
+            authorization: `Bearer ${token}`
+          },
+          http: {
+            includeExtensions: true
           }
-        },
-        error: error => {
-          observer.error(error)
-        },
-        complete: () => {
-        }
-      }
+        })
+        return operation
+      },
+      handleError: (err) => {
+        // full control over handling token fetch Error
+        console.warn('Your refresh token is invalid. Try to relogin')
+        console.error(err)
 
-      this.subscription = forward(operation).subscribe(subscriber)
-
-      return () => {
-        this.subscription.unsubscribe()
+        // your custom action here
+        // user.logout()
       }
     })
   }

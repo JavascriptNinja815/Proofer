@@ -12,6 +12,7 @@ query getAssets ($categoryIds: [ID], $after: String) {
       node {
         id
         url
+        mime
         categories {
           id
           name
@@ -23,8 +24,14 @@ query getAssets ($categoryIds: [ID], $after: String) {
 }`
 
 export const deleteMedium = gql`
-mutation deleteMedium($input: DeleteInput!) {
-  deleteMedium(input: $input)
+mutation deleteMedium($input: EditMediaInput!) {
+  editMedium(input: $input) {
+    media {
+      id
+      url
+      mime
+    }
+  }
 }`
 
 export const getCategorybySocialIdQuery = gql`
@@ -50,11 +57,12 @@ query assetsBySocialProfile ($id: ID!) {
     id
     name
     color
-    media{
+    media (inBank: true) {
       edges{
         node{
           id
           url
+          mime
         }
       }
     }
@@ -67,11 +75,12 @@ query assetsByCategory ($id: ID!) {
     id
     name
     color
-    media{
+    media (inBank: true) {
       edges{
         node{
           id
           url
+          mime
           categories {
             id
             name
@@ -84,3 +93,15 @@ query assetsByCategory ($id: ID!) {
 }`
 
 
+export const getAssetsForStats = gql`
+query getAssets ($profileIds: [ID]) {
+  media_find (profileIds: $profileIds) {
+    edges {
+      node {
+        id
+        url
+        mime
+      }
+    }
+  }
+}`

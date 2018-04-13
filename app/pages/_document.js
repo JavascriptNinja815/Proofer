@@ -1,7 +1,6 @@
 import Document, { Head, Main, NextScript } from 'next/document'
 import Helmet from 'react-helmet'
 import 'cross-fetch/polyfill'
-// import { ServerStyleSheet } from 'styled-components'
 import AppIcons from '../components/AppIcons'
 
 export default class MyDocument extends Document {
@@ -32,20 +31,17 @@ export default class MyDocument extends Document {
   }
 
   render () {
-    // const sheet = new ServerStyleSheet()
-    // const main = sheet.collectStyles(<Main />)
-    // const styleTags = sheet.getStyleElement()
     return (
       <html lang='en' {...this.helmetHtmlAttrComponents()}>
         <Head>
           <meta name='robots' content='index,follow' />
           <meta httpEquiv='expires' content='10800' />
           <meta name='generator' content='Proofer' />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+          <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0' />
           {this.helmetHeadComponents()}
           {AppIcons()}
-          {/* styleTags */}
           <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css' />
+          <link rel='stylesheet' href='/_next/static/style.css' />
         </Head>
         <body>
           <div className='root'>

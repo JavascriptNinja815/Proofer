@@ -7,7 +7,7 @@ query ($id: ID!) {
     id
     name
     color
-    contents {
+    contents (inBank: true) {
       pageInfo {
         hasNextPage
         endCursor
@@ -19,6 +19,17 @@ query ($id: ID!) {
           inBank
           evergreen
           published
+          schedules{
+            edges{
+              node{
+                status{
+                  ...on TwitterStatus {
+                    favouriteCount
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -40,7 +51,7 @@ query socialProfile ($id: ID!) {
           id
           name
           color
-          contents {
+          contents (inBank: true) {
             pageInfo {
               hasNextPage
               endCursor
@@ -52,6 +63,23 @@ query socialProfile ($id: ID!) {
                 inBank
                 evergreen
                 published
+                schedules{
+                  edges{
+                    node{
+                      status{
+                        ...on TwitterStatus {
+                          favouriteCount
+                          retweetCount
+                        }
+                      }
+                    }
+                  }
+                }
+                media {
+                  id
+                  url
+                  mime
+                }
               }
             }
           }

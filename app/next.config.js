@@ -1,12 +1,49 @@
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const { IgnorePlugin, DefinePlugin } = require('webpack')
 const OfflinePlugin = require('offline-plugin')
+const withSass = require('@zeit/next-sass')
 
-module.exports = {
-  webpack: (config, { dev }) => {
+module.exports = withSass({
+  webpack: (config, { dev, buildId, isServer }) => {
     const prod = !dev
 
+    if (!dev) {
+      config.devtool = 'source-map'
+    }
+
     config.plugins.push(new IgnorePlugin(/^\.\/locale$/, /moment$/))
+    config.plugins.push(
+      new DefinePlugin({
+        'process.env': {
+          // flag to indicate this is for browser-side
+          BROWSER: !isServer
+        }
+      })
+    )
+
+    config.module.rules.push({
+      test: /\.(png|jpe?g|gif|webp)$/i,
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            outputPath: 'images/',
+            publicPath: '/_next/',
+            name: dev ? '[name]-[hash].[ext]' : '[hash].[ext]',
+            limit: 4000,
+          },
+        },
+      ],
+    })
+
+//      module.exports = {
+//   webpack: (config, { dev }) => {
+//     config.module.rules.push({ test: /\.scss$/, loader: ['style-loader', 'css-loader', 'sass-loader'] });
+//     return config;
+//   }
+// } 
+
+
 
     if (process.env.ANALYZE_BUILD) {
       config.plugins.push(
@@ -17,25 +54,6 @@ module.exports = {
         })
       )
     }
-
-    config.module.rules.push({
-      test: /\.(css|scss)$/,
-      use: [
-        'style-loader',
-        'css-loader',
-        'sass-loader'
-      ],
-      exclude: /node_modules/
-    })
-
-    config.plugins.push(
-      new DefinePlugin({
-        'process.env': {
-          // flag to indicate this is for browser-side
-          BROWSER: JSON.stringify(true)
-        }
-      })
-    )
 
     if (prod && process.env.OFFLINE_SUPPORT) {
       config.plugins.push(
@@ -84,5 +102,6 @@ module.exports = {
     }
 
     return config
-  }
-}
+  },
+  useFileSystemPublicRoutes: false
+})

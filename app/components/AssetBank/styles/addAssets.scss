@@ -66,6 +66,10 @@
         box-shadow: none;
         font-size: 1em;
         color: #121212;
+        &.savecategory-button {
+          background-color: #4ADB91;
+          color: #FFF;
+        }
       }
     }
   }

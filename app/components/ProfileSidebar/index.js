@@ -1,26 +1,24 @@
 import React, { Component } from 'react'
 import { graphql, withApollo } from 'react-apollo'
 import gql from 'graphql-tag'
-import { Menu,Dropdown,Icon,Divider } from 'semantic-ui-react'
+import { Menu, Dropdown, Icon, Divider } from 'semantic-ui-react'
 import persist from '../../libraries/persist'
 import redirect from '../../libraries/redirect'
 import SelectProfile from './selectProfile.js'
 import fetchTeamId from './fetchTeamId.gql'
 import Gravatar from 'react-gravatar'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class ProfileSidebar extends Component {
-  
+
   render () {
     const { data, errors, token, teamId, socialId,active,refreshToken } = this.props
     if (!token) {
       return (<div />)
     }
 
-   
+
     if (errors) {
       return (<div>Error {errors[0].message}</div>)
     }
@@ -33,11 +31,11 @@ class ProfileSidebar extends Component {
             <Gravatar email={email} size={26} default="identicon" />
           </Menu.Item>
           <Divider className="divider"/>
-          <SelectProfile 
-            useTeamId={this.props.useTeamId} 
-            useSocialProf={this.props.useSocialProf} 
-            teamId={teamId} 
-            socialId={socialId} 
+          <SelectProfile
+            useTeamId={this.props.useTeamId}
+            useSocialProf={this.props.useSocialProf}
+            teamId={teamId}
+            socialId={socialId}
             myTeams={data.me.teams}
           />
           <Divider className="divider" />
@@ -125,13 +123,13 @@ class AddSocialProfile extends Component {
       {key: 'facebook',text:<span>{facebook}</span>, value: 'facebook'},
       {key: 'linkedin',text:<span>{linkedIn}</span>, value: 'linkedin'}
     ]
-	
+
     return (
-      <Dropdown 
-        trigger={ 
+      <Dropdown
+        trigger={
           <Icon
-            className='social-icon-dropdown' 
-            circular 
+            className='social-icon-dropdown'
+            circular
             bordered
             size='small'
             name='plus'

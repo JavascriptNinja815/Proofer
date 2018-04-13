@@ -20,7 +20,7 @@
       align-items: center;
       color: #fff;
       justify-content: space-between;
-      padding: 1.8em 10px 2.6em 20px;
+      padding: 1.8em 10px 2em 20px;
       .icon-view {
         padding-left: 20px;
         padding-top: 5px;
@@ -56,6 +56,7 @@
       font-weight: bold;
       text-shadow: none;
       cursor: pointer;
+      border-radius: 0;
       &.active {
         color: #FFFFFF;
         background: linear-gradient(to right, #334F71, #406488);
@@ -129,5 +130,11 @@
       transform: translate(50%, 50%);
       cursor: pointer;
     }
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .sidebar-container {
+    display: none;
   }
 }

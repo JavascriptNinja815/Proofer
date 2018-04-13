@@ -15,12 +15,8 @@ class DashboardPage extends React.Component {
     const { loggedInUser } = checkLoggedIn(context, apolloClient)
 
     if (!loggedInUser.user) {
-      // Not signed in yet?
-      // Throw them back to the login page
       redirect(context, '/app/login')
     }
-    // Temporary redirect until dashboard page is implemented
-    redirect(context, '/app/posts')
     return { token: accessToken, refreshToken: refreshToken, socialId: socialId, teamId: teamId }
   }
 

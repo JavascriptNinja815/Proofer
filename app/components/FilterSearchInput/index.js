@@ -7,9 +7,7 @@ import { graphql } from 'react-apollo'
 import { createCategoryMutation } from '../Campaigns/graphql/categoryMutations'
 import { getCategorybySocialIdQuery } from '../Campaigns/graphql/categoryQueries'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class FilterSearchInput extends Component {
   constructor (props) {

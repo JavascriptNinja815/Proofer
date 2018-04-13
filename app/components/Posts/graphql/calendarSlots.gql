@@ -1,4 +1,4 @@
-query ($profileIds: [ID]!, $categoryIds: [ID], $type: CalendarSlotType) {
+query postPageCalendarSlots ($profileIds: [ID]!, $categoryIds: [ID], $type: CalendarSlotType) {
   calendarSlots_find(profileIds: $profileIds, categoryIds: $categoryIds, type: $type) {
     edges {
       node {
@@ -16,33 +16,6 @@ query ($profileIds: [ID]!, $categoryIds: [ID], $type: CalendarSlotType) {
           id
           socialNetwork
           facebookPageName
-        }
-        contentSchedules {
-          id
-          publishAt
-          content {
-            id
-            text
-            media {
-              id
-              url
-            }
-            comments{
-              edges{
-                node{
-                  id
-                  text
-                  createdAt
-                  user{
-                    id
-                    firstName
-                    lastName
-                    email
-                  }
-                }
-              }
-            }
-          }
         }
         __typename
       }

@@ -1,55 +1,60 @@
 .no-auth-page {
-  $input-width: 70%;
+  $input-width: 80%;
 
-  background: #F6F6F6;
+  background: #FCFDFF;
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 
   #no-auth-container {
     position: relative;
     width: 100%;
-    overflow-y: auto;
     margin: 0;
     padding: 0;
   }
-  .submit-button {
-    width: $input-width;
-    font-size:1.072em; padding: 10px 10px 10px 10px; text-decoration:none; display:inline-block;
-    font-weight: bold;
-    color: #FFFFFF;
-    border-radius:10px;
-    background-color: #F8854C;
-    background-image: -webkit-linear-gradient(45deg, #F8854C, #F7545A);
-    background-image: -moz-linear-gradient(45deg, #F8854C, #F7545A);
-    background-image: -ms-linear-gradient(45deg, #F8854C, #F7545A);
-    background-image: -o-linear-gradient(45deg, #F8854C, #F7545A);
-    background-image: linear-gradient(45deg, #F8854C, #F7545A);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F8854C, endColorstr=#F7545A);
+
+  .ui.form .field>label{
+    text-align: left;
+    font-size: 1em;
   }
-  .submit-button:hover {
-    background-color: #f6641b;
-    background-image: -webkit-linear-gradient(45deg, #f6641b, #f5232b);
-    background-image: -moz-linear-gradient(45deg, #f6641b, #f5232b);
-    background-image: -ms-linear-gradient(45deg, #f6641b, #f5232b);
-    background-image: -o-linear-gradient(45deg, #f6641b, #f5232b);
-    background-image: linear-gradient(45deg, #f6641b, #f5232b);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f6641b, endColorstr=#f5232b);
+  .ui.button.submit-button {
+    width: $input-width;
+    font-size:1.072em;
+    padding: 1em;
+    text-decoration:none;
+    display:inline-block;
+    font-weight: bold;
+    font-size: 1em;
+    color: #FFFFFF;
+    border-radius:4px;
+    background-color: #4ADB91;
+    text-transform: uppercase;
+  }
+  .ui.button.submit-button:hover {
+    background-color: #28ca77;
+    color: #FFFFFF;
   }
   .field.input {
     width: $input-width;
     margin-top: 20px;
     .ui.input input{
-      border: 1px solid #E2E2E2 !important;
-      border-radius: 10px;
+      border: 1px solid #D6D6D6;
+      border-radius: 4px;
+      padding: 1em;
     }
   }
   .ui.header.custom-header {
-    margin-top: 150px;
     margin-bottom: 30px;
     text-align: center;
     &-no-logo {
-      margin-top: 20px;
       text-align: center;
     }
     &-long {
-      margin-top: 50px!important;
+      font-size: 2em;
+      font-weight: bold;
+      text-align: center;
     }
   }
   .ui.form .field {
@@ -58,6 +63,8 @@
   .secondary-action {
     margin-top: 20px;
     color: #343434;
+    font-size: 1.1em;
+    font-weight: bold;
     &:first-of-type {
       margin-top: 50px;
     }
@@ -74,9 +81,5 @@
   }
   .ui.message {
     text-align: center;
-  }
-  .ui.button {
-    font-size: 1em;
-    border-radius: 10px;
   }
 }

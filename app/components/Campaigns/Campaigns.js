@@ -6,11 +6,23 @@ import Freshness from '../Freshness'
 import CampaignsItemsWrapper from './CampaignsItemsWrapper'
 import {fetchOneCategoryQuery} from './graphql/categoryQueries'
 
-if (process.env.BROWSER) {
-  require('./styles/index.scss')
-}
+import './styles/index.scss'
 
-class Campaings extends React.Component {
+class Campaigns extends React.Component {
+
+  countLikes = (schedules) => {
+    let list = schedules.edges.map((m) => m.node);
+    let likes = 0;
+    if(list) {
+      list.map(({status}) => {
+        if(status && status.favouriteCount){
+          likes = parseInt(likes) + parseInt(status.favouriteCount)
+        }
+      })
+    }
+    return likes;
+  }
+
   render () {
     const {data} = this.props
 
@@ -30,12 +42,42 @@ class Campaings extends React.Component {
       </Grid>)
     }
 
+    let totalLike = 0;
+    const contents = data.category.contents.edges.map((m) => m.node);
+
+    contents.map((content, i) => {
+      totalLike = parseInt(totalLike) + parseInt(this.countLikes(content.schedules))
+    })
+
     const catInfo = {
       name: data.category.name,
       id: data.category.id,
       color: data.category.color || '#36BF99',
       backgroundUrl: data.category.backgroundUrl || '#f9f9f9',
       posts: data.category.contents.edges.length
+    }
+
+    if (process.env.BROWSER) {
+      if (window.innerWidth < 600) {
+        return (
+          <div className='campaigns-item-wrapper' onClick={() => this.handleToggleItems(catInfo.id)}>
+            <div className='campaigns-item'>
+              <div className='campaigns-title'>
+                <div className='campaigns-color' style={{backgroundColor: catInfo.color}} />
+                {catInfo.name}
+              </div>
+              <div className='campaigns-likes'>Total likes <span><Icon name='heart' color='red' /><span className='thin-number'>{totalLike}</span></span></div>
+              <div className='campaigns-freshness'>Freshness <Freshness percentage={90} /></div>
+            </div>
+            <div className='campaigns-items show'>
+              <CampaignsItemsWrapper
+                categoryId={catInfo.id}
+                mobile
+              />
+            </div>
+          </div>
+        )
+      }
     }
 
     return (
@@ -46,8 +88,8 @@ class Campaings extends React.Component {
             {catInfo.name}
           </div>
           <div className='campaigns-posts'>Posts <span className='bold-number'>{catInfo.posts}</span></div>
-          <div className='campaigns-likes'>Total likes <Icon name='heart' color='red' /><span className='thin-number'>357</span></div>
-          <div className='campaigns-freshness'>Freshness <Freshness percentage={98} /></div>
+          <div className='campaigns-likes'>Total likes <span><Icon name='heart' color='red' /><span className='thin-number'>{totalLike}</span></span></div>
+          <div className='campaigns-freshness'>Freshness <Freshness percentage={90} /></div>
         </div>
         <div className='campaigns-items show'>
           <CampaignsItemsWrapper
@@ -65,4 +107,4 @@ export default graphql(fetchOneCategoryQuery, {
       id: props.categoryId
     }
   })
-})(Campaings)
+})(Campaigns)

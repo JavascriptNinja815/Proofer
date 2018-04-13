@@ -1,22 +1,19 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import { graphql, compose, withApollo } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import {createCommentMutation} from './graphql/CommentQueries'
 import calendarSlotsGql from '../Posts/graphql/calendarSlots.gql'
-import Loader from '../Loader'
 import Notification from '../Notification'
-import { Grid, Comment, Form, Button, Icon } from 'semantic-ui-react'
+import { Grid, Comment, Form, Button } from 'semantic-ui-react'
 import Gravatar from 'react-gravatar'
 import moment from 'moment'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class ContentComments extends Component {
   constructor (props) {
     super(props)
-    let comments =  props.comments
+    let comments = props.comments.map(e => e.node)
     this.state = {
       commentText: '',
       btnStatus: false,
@@ -102,7 +99,7 @@ class ContentComments extends Component {
     const {contentId} = this.props
     const {btnStatus, commentText, savingComment, comments} = this.state
 
-    return (<Grid padded className='content-comments'>
+    return (<Grid padded className='content-comments ignore-react-onclickoutside'>
         <Grid.Row className='comments-list' id={'comment_list_'+contentId}>
           {comments && <Comment.Group>
               { comments.map(comment => <Comment key={comment.id}>

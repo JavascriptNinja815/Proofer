@@ -3,10 +3,9 @@
   width: 100%;
   .add-assets-dropdown {
     position: absolute;
-    top: -2px;
-    left: -1px;
+    left: calc(-0.75em - 1px);
     z-index: 10;
-    width: 100.3%;
+    width: calc(100% + 1.5em + 2px); // 1.5em = total padding of container, 2px = border
     background-color: #ffffff;
     border: 1px solid #D6D6D6;
     border-radius: 4px;
@@ -55,7 +54,7 @@
         display: inline-block;
         position: relative;
         width: 32.75%;
-        max-height: 174px;
+        height: 174px;
         vertical-align:top;
         overflow: hidden;
         margin: 2px 2px 0 0;
@@ -65,6 +64,11 @@
           position: absolute;
           left: 0;
           top: 0;
+        }
+        img {
+          width: 100%;
+          height: inherit;
+          object-fit: cover;
         }
       }
     }

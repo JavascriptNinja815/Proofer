@@ -27,3 +27,31 @@ query socialProfile ($id: ID!) {
     }
   }
 }`
+
+export const fetchOneCategoryQuery =
+gql`
+query ($id: ID!) {
+  category(id : $id) {
+    id
+    name
+    contents {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          id
+          text
+          inBank
+          evergreen
+          published
+          media {
+            id
+            url
+          }
+        }
+      }
+    }
+  }
+}`

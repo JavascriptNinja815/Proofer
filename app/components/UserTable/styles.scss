@@ -1,9 +1,7 @@
-.page-wrapper {
+.page-wrapper.manage-team {
   margin-left: 200px;
   padding: 0px 0px 10px 20px;
-  margin-top: 0px;
   overflow:hidden;
-  background: #EEEFF3;
   min-height: calc(100vh - 59px);
   &.manage-team {
     padding-top: 2em;

@@ -1,17 +1,7 @@
-.no-auth-page {
-  * {
-    text-align: center;
-  }
-  .field.input {
-    width: 45%!important;
-  }
-}
-.page-wrapper {
+.page-wrapper.account-management {
     margin-left: 200px;
     padding: 0px 0px 10px 20px;
-    margin-top: 0px;
     overflow: hidden;
-    background: #EEEFF3;
     min-height: calc(100vh - 59px);
 }
 .input-label{

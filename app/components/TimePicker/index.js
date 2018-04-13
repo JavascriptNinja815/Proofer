@@ -1,8 +1,6 @@
 import React from 'react'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class TimePicker extends React.Component {
   constructor (props) {

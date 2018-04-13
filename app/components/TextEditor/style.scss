@@ -6,12 +6,12 @@
   border-radius: 0.28571429rem;
   box-shadow: 0em 0em 0em 0em transparent inset;
   margin: 0;
-  font-size: 1.1em;
+  font-size: 1em;
   .public-DraftEditorPlaceholder-root {
     position: absolute;
-    left: 12px;
-    top: 12px;
-    font-size: 0.9em;
+    left: 0;
+    top: 8px;
+    font-size: 1em;
     color: #aaa;
   }
   .draftJsHashtagPlugin__hashtag__1wMVC {
@@ -29,9 +29,9 @@
   }
   .attach-media {
     position: absolute;
-    bottom: 0.5em;
-    left: 0.35em;
-    padding: 6px 6px 2px;
+    bottom: 0;
+    left: 0;
+    padding: 6px 6px 6px;
     border-radius: 2px;
     line-height: 1;
     cursor: pointer;

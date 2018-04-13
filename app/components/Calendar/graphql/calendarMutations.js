@@ -8,19 +8,33 @@ mutation createCalendarSlot($input: CreateCalendarSlotInput!) {
       day
       time
       type
-      evergreen
       category {
         id
         name
+        color
       }
       socialProfile {
         id
         name
+        socialNetwork
+        facebookPageName
       }
       contentSchedules {
         id
-        type
         publishAt
+        status {
+          ... on TwitterStatus {
+            retweetCount
+            favouriteCount
+          }
+        }
+        content {
+          id
+          media {
+            id
+            url
+          }
+        }
       }
     }
   }
@@ -34,19 +48,33 @@ mutation editCalendarSlot($input: EditCalendarSlotInput!) {
       day
       time
       type
-      evergreen
       category {
         id
         name
+        color
       }
       socialProfile {
         id
         name
+        socialNetwork
+        facebookPageName
       }
       contentSchedules {
         id
-        type
         publishAt
+        status {
+          ... on TwitterStatus {
+            retweetCount
+            favouriteCount
+          }
+        }
+        content {
+          id
+          media {
+            id
+            url
+          }
+        }
       }
     }
   }

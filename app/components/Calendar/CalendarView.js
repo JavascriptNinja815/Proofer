@@ -79,7 +79,7 @@ class CalendarView extends React.Component {
     const {slots, catId, rightPanelOpen} = this.state
 
     return (<Grid className='calendar-page' centered>
-      <Grid.Column tablet={rightPanelOpen ? 10 : 12} computer={rightPanelOpen ? 10 : 12} largeScreen={rightPanelOpen ? 10 : 12} widescreen={rightPanelOpen ? 10 : 10} className='margin-t-20'>
+      <Grid.Column tablet={rightPanelOpen ? 10 : 16} computer={rightPanelOpen ? 10 : 16} largeScreen={rightPanelOpen ? 10 : 14} widescreen={rightPanelOpen ? 10 : 10} className='margin-t-20'>
         <CalendarTable
           onCalendarTableUpdate={this.handleCalendarTable}
           onRowAdd={this.handleAddEvent}

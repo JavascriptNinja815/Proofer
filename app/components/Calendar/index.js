@@ -3,16 +3,22 @@ import { graphql, compose } from 'react-apollo'
 
 import Loader from '../Loader'
 import CalendarView from './CalendarView'
+import TopPanel from '../TopPanel'
+import Stats from '../TopPanel/Stats'
+import { Dropdown } from 'semantic-ui-react'
+import FollowersCount from '../TopPanel/FollowersCount';
 
 import { calendarSlotsFindQuery } from './graphql/contentQueries'
 import { getCategorybySocialIdQuery } from './graphql/categoryQueries'
+import {calendarTimeAndDayWithOffset} from "../../libraries/helpers";
 
-if (process.env.BROWSER) {
-  require('./styles/react-activity.scss')
-  require('./styles/index.scss')
-}
 
-const Calendar = ({ socialId, calendarSlots, categories }) => {
+import './styles/react-activity.scss'
+import './styles/index.scss'
+
+
+const Calendar = ({ socialId, calendarSlots, categories }) =>  {
+
   if (!socialId) {
     return (
       <div className='page-wrapper'>
@@ -21,16 +27,15 @@ const Calendar = ({ socialId, calendarSlots, categories }) => {
     )
   }
 
-  if (calendarSlots.loading || categories.loading) {
-    return <Loader />
+  if(calendarSlots.loading || categories.loading) {
+    return <Loader />;
   }
 
   const finalSlots = {}
   const calendarSlotList = calendarSlots.calendarSlots_find.edges.map((e) => ({...e.node}))
   for (let i = 0; i < calendarSlotList.length; i++) {
     const item = calendarSlotList[i]
-    const day = item.day
-    const time = item.time
+    const {day, time} = calendarTimeAndDayWithOffset(item, new Date().getTimezoneOffset())
     if (finalSlots[time] === undefined) {
       finalSlots[time] = {
         0: {},
@@ -45,12 +50,11 @@ const Calendar = ({ socialId, calendarSlots, categories }) => {
     finalSlots[time][day] = item
   }
 
-  console.log(categories)
-  return (<div className='page-wrapper'>
+  return (<div className='page-wrapper calendar-wrapper'>
     <CalendarView
       slots={finalSlots}
       socialId={socialId}
-      categories={categories.socialProfile.categories.edges}
+      categories={categories.socialProfile ? categories.socialProfile.categories.edges : []}
     />
   </div>)
 }

@@ -1,23 +1,26 @@
 import React, { Component } from 'react'
-import { graphql, withApollo } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import { createApolloFetch } from 'apollo-fetch'
-import gql from 'graphql-tag'
 import Link from 'next/link'
-import { Menu, Dropdown, Icon, Dimmer, Divider } from 'semantic-ui-react'
+import { Menu, Dropdown, Icon, Dimmer, Modal, Button } from 'semantic-ui-react'
 import Loader from '../Loader'
+import Plans from '../Plans'
 import persist from '../../libraries/persist'
 import redirect from '../../libraries/redirect'
 import SelectTeamAndProfile from './selectTeamAndProfile.js'
-import fetchTeamId from './fetchTeamId.gql'
+import {meHeader} from './graphql/queries'
 import Gravatar from 'react-gravatar'
+import Notification from '../Notification'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class Header extends Component {
   constructor (props) {
     super(props)
+    this.state = {
+      modalOpen: false,
+      token: this.props.token
+    }
   }
 
   logOut = () => {
@@ -37,10 +40,9 @@ class Header extends Component {
     })
   }
 
-  useProfile = (event, data) => {
-    const service = data.value
+  useProfile = (service) => {
     const teamId = this.props.teamId
-    const token = this.props.token
+    const token = this.state.token
     const refreshToken = this.props.refreshToken
     const baseUrl = process.env.API_ENDPOINT_BASE
     const baseUrlConnect = baseUrl + '/connect/' + service
@@ -77,7 +79,7 @@ class Header extends Component {
     })
     .then((res) => {
       if (res.code === 401 && res.message === 'Expired JWT Token') {
-        const apolloFetch = createApolloFetch({ uri: baseUrl })
+        const apolloFetch = createApolloFetch({ uri: baseUrl + '/graphql/' })
         apolloFetch(refreshOperation)
           .then((refreshData) => {
             console.log(refreshData)
@@ -87,21 +89,53 @@ class Header extends Component {
             } else {
               persist.willSetAccessToken(refreshData.data.tokenRefresh.token)
               fullUrl = baseUrlConnect + '?bearer=' + refreshData.data.tokenRefresh.token + '&teamGID=' + teamId
-              redirect({}, fullUrl)
+              this.openModal(service, refreshData.data.tokenRefresh.token)
             }
           })
           .catch((error) => {
             console.log('Apollo fetch error data')
             console.log(error)
           })
+      } else if (res.error) {
+          throw res
       } else {
-        redirect({}, fullUrl)
+        this.openModal(service)
       }
     })
     .catch((error) => {
       console.error(error)
-      if (error.message === 'Failed to fetch') redirect({}, fullUrl)
+      if (error.error === 'Please upgrade your account to add more social profiles.') Notification.error(error.error)
+      if (error.name === 'TypeError') this.openModal(service)
     })
+  }
+
+  openModal = (socialNetwork, token = null) => this.setState({ modalOpen: socialNetwork, ...token && {token} })
+
+  closeModal = () => this.setState({ modalOpen: false })
+
+  renderModal = () => {
+    const baseUrl = process.env.API_ENDPOINT_BASE
+    const baseUrlConnect = baseUrl + '/connect/' + this.state.modalOpen
+    const token = this.state.token
+    let fullUrl = baseUrlConnect + '?bearer=' + token + '&teamGID=' + this.props.teamId
+    return (
+      <Modal
+        open={!!this.state.modalOpen}
+        size='mini'
+      >
+        <Modal.Content>
+          You will be redirected to {this.state.modalOpen}
+        </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={() => this.closeModal()}>
+            <Icon name='remove'/> Cancel
+          </Button>
+          <Button className='success' as='a' href={fullUrl}>
+            <Icon name='checkmark'/> Go!
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    )
   }
 
   render () {
@@ -116,8 +150,8 @@ class Header extends Component {
       return (<div>Error {errors[0].message}</div>)
     }
 
-    if (data.me === undefined) {
-      return (<Dimmer active={true} page>
+    if (!data.me) {
+      return (<Dimmer active page>
         <Loader />
       </Dimmer>)
     }
@@ -125,8 +159,9 @@ class Header extends Component {
     const email = persist.willGetEmail()
 
     const profiles = [
-      {key: 'twitter', icon: 'twitter', text: 'Twitter', value: 'twitter'},
-      {key: 'facebook', icon: 'facebook f', text: 'Facebook', value: 'facebook'},
+      {key: 'twitter', icon: 'twitter', text: 'Twitter', value: 'twitter', onClick: () => {this.useProfile('twitter')}},
+      {key: 'facebook', icon: 'facebook f', text: 'Facebook', value: 'facebook', onClick: () => {this.useProfile('facebook')}},
+      {key: 'instagram', icon: 'instagram', text: 'Instagram (planning)', value: 'instagram', onClick: () => {this.useProfile('instagram')}},
       //{key: 'linkedin', icon: 'linkedin', text: 'LinkedIn', value: 'linkedin'}
     ]
 
@@ -139,10 +174,10 @@ class Header extends Component {
         */}
         <Dropdown
           className='item'
-          icon={ false}
+          icon={false}
           pointing={'left'}
           trigger={
-            <span><Gravatar email={email} size={40} default="identicon" className="ui mini circular image" /></span>
+            <div><Gravatar email={email} size={40} default='identicon' className='ui mini circular image' /></div>
           }>
           <Dropdown.Menu>
             <Link prefetch href='/app/account'>
@@ -155,6 +190,13 @@ class Header extends Component {
                 text='Manage Team'
               />
             </Link>
+            <Modal
+              trigger={<Dropdown.Item text='Upgrade' />}
+            >
+              <Modal.Content>
+                <Plans currentPlan={data.me.plan}/>
+              </Modal.Content>
+            </Modal>
             <Dropdown.Item
               className='log-out'
               text='Log Out'
@@ -173,14 +215,14 @@ class Header extends Component {
           className='item add-profile'
           options={profiles}
           selectOnBlur={false}
-          onChange={this.useProfile}
           pointing={'left'}
         />
+        {this.state.modalOpen && this.renderModal()}
 
       </Menu>
     )
   }
 }
 
-const HeaderWithData = graphql(gql`${fetchTeamId}`)(Header)
-export default withApollo(HeaderWithData)
+
+export default compose(graphql(meHeader))(Header)

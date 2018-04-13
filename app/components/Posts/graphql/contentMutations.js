@@ -6,6 +6,41 @@ mutation createContent($input: CreateContentInput!) {
     content {
       id
       text
+      schedules{
+        edges{
+          node{
+            publishAt
+            status{
+              ...on TwitterStatus {
+                favouriteCount
+              }
+            }
+          }
+        }
+      }
+      categories {
+        id
+        name
+        color
+      }
+      media{
+        id
+        url
+        mime
+      }
+    }
+  }
+}`
+
+export const editContentMutation = gql`
+mutation editContent($input: EditContentInput!) {
+  editContent(input: $input) {
+    content {
+      id
+      text
+      inBank
+      evergreen
+      published
       socialProfiles {
         id
         name
@@ -18,6 +53,7 @@ mutation createContent($input: CreateContentInput!) {
       media {
         id
         url
+        mime
       }
     }
   }
@@ -46,6 +82,7 @@ mutation editContent($input: EditContentInput!) {
       media {
         id
         url
+        mime
       }
     }
   }
@@ -58,17 +95,44 @@ mutation createContentSchedule($input: CreateContentScheduleInput!) {
       id
       type
       moderationStatus
+      publishingStatus
       publishAt
       socialProfile {
         id
         name
+        socialNetwork
+      }
+      status{
+        ...on TwitterStatus {
+          retweetCount
+          favouriteCount
+        }
       }
       content {
         id
         text
+        inBank
+        evergreen
+        published
         media {
           id
           url
+          mime
+        }
+        comments{
+          edges{
+            node{
+              id
+              text
+              createdAt
+              user{
+                id
+                firstName
+                lastName
+                email
+              }
+            }
+          }
         }
       }
       calendarSlot {
@@ -87,18 +151,45 @@ mutation editContentSchedule($input: EditContentScheduleInput!) {
     contentSchedule {
       id
       type
-      moderationStatus
       publishAt
       socialProfile {
         id
         name
+        socialNetwork
       }
+      status{
+        ...on TwitterStatus {
+          retweetCount
+          favouriteCount
+        }
+      }
+      publishAt
+      moderationStatus
       content {
         id
         text
+        inBank
+        evergreen
+        published
         media {
           id
           url
+          mime
+        }
+        comments{
+          edges{
+            node{
+              id
+              text
+              createdAt
+              user{
+                id
+                firstName
+                lastName
+                email
+              }
+            }
+          }
         }
       }
       calendarSlot {
@@ -111,16 +202,34 @@ mutation editContentSchedule($input: EditContentScheduleInput!) {
   }
 }`
 
+export const deleteContentScheduleMutation = gql`
+mutation deleteContentSchedule($input: DeleteInput!) {
+  deleteContentSchedule(input: $input)
+}`
+
 export const editContentAddMediaMutation = gql`
 mutation editContentAddMedia($input: EditContentMediaInput!) {
   editContentAddMedia(input: $input) {
     content {
       id
       text
-      socialProfiles {
-        id
-        name
-        socialNetwork
+      inBank
+      evergreen
+      published
+      comments{
+        edges{
+          node{
+            id
+            text
+            createdAt
+            user{
+              id
+              firstName
+              lastName
+              email
+            }
+          }
+        }
       }
       categories {
         id
@@ -129,6 +238,7 @@ mutation editContentAddMedia($input: EditContentMediaInput!) {
       media {
         id
         url
+        mime
       }
     }
   }
@@ -140,10 +250,23 @@ mutation editContentRemoveMedia($input: EditContentMediaInput!) {
     content {
       id
       text
-      socialProfiles {
-        id
-        name
-        socialNetwork
+      inBank
+      evergreen
+      published
+      comments{
+        edges{
+          node{
+            id
+            text
+            createdAt
+            user{
+              id
+              firstName
+              lastName
+              email
+            }
+          }
+        }
       }
       categories {
         id
@@ -151,6 +274,8 @@ mutation editContentRemoveMedia($input: EditContentMediaInput!) {
       }
       media {
         id
+        url
+        mime
       }
     }
   }

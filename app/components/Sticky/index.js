@@ -1,9 +1,7 @@
 import React, {Component} from 'react'
 import {Grid} from 'semantic-ui-react'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class Sticky extends Component {
   constructor (props) {

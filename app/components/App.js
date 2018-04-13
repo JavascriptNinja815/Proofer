@@ -1,10 +1,6 @@
-import PropTypes from 'prop-types'
+import './App.scss'
 
 let offlineInstalled = false
-
-if (process.env.BROWSER) {
-  require('./App.scss')
-}
 
 const App = ({ children }) => {
   if (process.env.OFFLINE_SUPPORT && process.browser && !offlineInstalled) {
@@ -22,10 +18,6 @@ const App = ({ children }) => {
   }
 
   return (<div>{children}</div>)
-}
-
-App.propTypes = {
-  children: PropTypes.array.isRequired
 }
 
 export default App

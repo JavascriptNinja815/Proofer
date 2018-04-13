@@ -1,31 +1,41 @@
-import React from 'react'
+import React, {Component} from 'react'
 import { Grid, Dropdown } from 'semantic-ui-react'
 import Campaigns from './Campaigns'
 import CampaignsMulti from './CampaignsMulti'
+import onClickOutside from 'react-onclickoutside'
 
-if (process.env.BROWSER) {
-  require('./styles/index.scss')
-}
+import './styles/index.scss'
 
-class CampaingsIndex extends React.Component {
-  state = {
-    value: ''
+class CampaignsIndex extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      value: ''
+    }
   }
 
   onChangeFilter = (e, { value }) => {
     this.setState({ value })
   }
 
+  onTogglePanel = () => {
+    console.log('CLick outside method')
+    this.props.onTogglePanel(this.props.categoryId)
+  }
+
+
   render () {
-    const {id, width, tablet, computer, largeScreen, widescreen, isMulti} = this.props
+    const {id, width, mobile, tablet, computer, largeScreen, widescreen, isMulti} = this.props
     const {value} = this.state
 
     let style = {
       position: 'fixed',
-      top: 48,
+      top: 80,
       right: 0,
       zIndex: 100,
-      width: 'calc(50% - 284px)'
+      width: '42em',
+      maxWidth: '42em',
+      boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.2)'
     }
 
     const options = [
@@ -34,10 +44,10 @@ class CampaingsIndex extends React.Component {
       { key: 3, text: 'Z-A', value: 3 }
     ]
 
-    return (<Grid.Column className='campaigns-panel' {...{width, tablet, computer, largeScreen, widescreen}}>
+    return (<Grid.Column className='campaigns-panel ignore-react-onclickoutside' {...{width, tablet, computer, largeScreen, widescreen}}>
       <div id={id} style={style}>
         <div className='campaigns-header'>
-          <div className='title'>Campaigns</div>
+          <div className='title' onClick={this.props.onTogglePanel}>Campaigns</div>
           <Dropdown
             onChange={this.handleChange}
             options={options}
@@ -63,4 +73,17 @@ class CampaingsIndex extends React.Component {
   }
 }
 
-export default CampaingsIndex
+const clickOutsideConfig = {
+  handleClickOutside: (instance) => {
+    console.log(instance)
+    return instance.onTogglePanel
+  }
+}
+
+const CampaignsIndexWithClickHandler = onClickOutside(CampaignsIndex, clickOutsideConfig)
+
+export default class Container extends Component {
+  render () {
+    return <CampaignsIndexWithClickHandler outsideClickIgnoreClass='ignore-react-onclickoutside' {...this.props} />
+  }
+}

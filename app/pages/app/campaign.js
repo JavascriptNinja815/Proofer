@@ -10,6 +10,8 @@ class CampaignPage extends React.Component {
   static getInitialProps (context, apolloClient) {
     const refreshToken = persist.willGetRefreshToken(context)
     const accessToken = persist.willGetAccessToken(context)
+    const socialId = persist.willGetCurrentSocialProfile(context)
+    const teamId = persist.willGetTeamId(context)
     const { loggedInUser } = checkLoggedIn(context, apolloClient)
 
     if (!loggedInUser.user) {
@@ -17,7 +19,8 @@ class CampaignPage extends React.Component {
       // Throw them back to the login page
       redirect(context, '/app/login')
     }
-    return { token: accessToken, refreshToken: refreshToken }
+
+    return { token: accessToken, refreshToken: refreshToken, socialId: socialId, teamId: teamId }
   }
 
   render () {

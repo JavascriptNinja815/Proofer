@@ -40,12 +40,12 @@ export function isEmpty (obj) {
 }
 
 export function getCorrectHours (time) {
-  const hours = Math.floor(time / 60)
-  const minutes = (time % 60)
+  let hours = Math.floor(time / 60)
+  let minutes = (time % 60)
   return hours.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false}) + ':' + minutes.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})
 }
 
-export function es6DateToDateTime (date, time) {
+export function es6DateToDateTime (date) {
   let day = date.getDate()
   const year = date.getFullYear()
   let month = date.getMonth() + 1 // ES6 getMonth returns 0-11, we need it in the format 01-12
@@ -56,7 +56,7 @@ export function es6DateToDateTime (date, time) {
     day = '0' + day
   }
 
-  return `${year}-${month}-${day} ${getCorrectHours(time)}:00`
+  return `${year}-${month}-${day} ${getCorrectHours(date)}:00`
 }
 
 export function es6TimeToTime (time) {
@@ -71,25 +71,53 @@ export function es6TimeToTime (time) {
   return `${parseInt(hour, 10) * 60} ${parseInt(minute, 10)}`
 }
 
+export function convertDateToUTC (date) {
+  const utcDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60000)
 
-export function LightenDarkenColor (col, amt) {
-  var usePound = false;
-  if (col[0] == "#") {
-      col = col.slice(1);
-      usePound = true;
+  let day = utcDate.getDate()
+  const year = utcDate.getFullYear()
+  let month = utcDate.getMonth() + 1 // ES6 getMonth returns 0-11, we need it in the format 01-12
+  let hour = utcDate.getHours()
+  let minute = utcDate.getMinutes()
+  if (month < 10) {
+    month = '0' + month
   }
-  var num = parseInt(col,16);
-  var r = (num >> 16) + amt;
-  if (r > 255) r = 255;
-  else if  (r < 0) r = 0;
+  if (day < 10) {
+    day = '0' + day
+  }
+  if (hour < 10) {
+    hour = '0' + hour
+  }
+  if (minute < 10) {
+    minute = '0' + minute
+  }
 
-  var b = ((num >> 8) & 0x00FF) + amt;
-  if (b > 255) b = 255;
-  else if  (b < 0) b = 0;
+  return `${day}-${month}-${year} ${hour}:${minute}`
+}
 
-  var g = (num & 0x0000FF) + amt;
-  if (g > 255) g = 255;
-  else if (g < 0) g = 0;
+export function hexToRGB (hex, opacity) {
+  hex = parseInt(hex.slice(1), 16)
+  let r = hex >> 16
+  let g = hex >> 8 & 0xFF
+  let b = hex & 0xFF
+  return `rgba(${r},${g},${b},${opacity})`
+}
 
-  return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+// Convert calendar day/time from server to incorporate user's timezone
+export function calendarTimeAndDayWithOffset (calendarSlot, offset) {
+  let time = calendarSlot.time - offset
+  let day = calendarSlot.day
+
+  if (time > 1440) {
+    time = time - 1440
+    day = day + 1
+  }
+  if (time < 0) {
+    time = time + 1440
+    day = day - 1
+  }
+
+  day = day === 7 ? 0 : day
+  day = day === -1 ? 6 : day
+  return {day, time}
 }

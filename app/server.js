@@ -7,6 +7,8 @@ const fs = require('fs')
 const cors = require('cors')
 const helmet = require('helmet')
 
+const symlinkDir = require('symlink-dir')
+
 const router = require('./routes')
 const logger = require('./server/logger')
 
@@ -35,6 +37,16 @@ const buildStats = isProd
 const buildId = isProd
   ? fs.readFileSync('./.next/BUILD_ID', 'utf8').toString()
   : null
+
+/* to fetch assets(photoeditorsdk ui supports) from node_modules*/
+
+symlinkDir('./node_modules/photoeditorsdk/assets', './static/photoeditorsdk/assets')
+  .then(result => {
+    console.log(result)
+  })
+  .catch(err => {
+    console.error(err)
+  })
 
 /*
  * NB: make sure to modify this to take into account anything that should trigger

@@ -12,9 +12,7 @@ import createTeamRoleInvitationMutation from './createTeamRoleInvitationMutation
 import persist from '../../libraries/persist'
 import Notification from '../Notification/index'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 const roleOptions = [
   {

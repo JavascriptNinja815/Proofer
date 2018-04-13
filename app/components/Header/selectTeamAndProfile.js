@@ -8,12 +8,28 @@ class SelectTeamAndProfile extends Component {
     if (!socialId && teamId && myTeams) {
       myTeams.edges.map((currentValue) => {
         const team = currentValue.node
-        console.log(team.socialProfiles.edges)
         if (teamId === team.id && team.socialProfiles.edges.length !== 0) {
           this.props.useSocialProf(team.socialProfiles.edges[0].node.id)
         }
       })
     }
+  }
+
+  socialProfileIcon = (profile) => {
+    return (
+      <div>
+        <Image className='avatar' size={'mini'} circular src={profile.profilePicture}/>
+          {profile.socialNetwork === 'TWITTER' &&
+          <Icon className='corner' bordered inverted name='twitter'/>
+          }
+          {profile.socialNetwork === 'FACEBOOK' &&
+          <Icon className='corner' bordered inverted name='facebook f'/>
+          }
+          {profile.socialNetwork === 'INSTAGRAM' &&
+          <Icon className='corner' bordered inverted name='instagram'/>
+          }
+      </div>
+    )
   }
 
   render () {
@@ -31,7 +47,7 @@ class SelectTeamAndProfile extends Component {
             if (profile) {
               let avatar
               if (profile.profilePicture) {
-                avatar = (<Image size={'mini'} circular src={profile.profilePicture} />)
+                avatar = this.socialProfileIcon(profile)
               } else {
                 let icon = 'twitter'
                 switch (profile.socialNetwork) {
@@ -47,14 +63,15 @@ class SelectTeamAndProfile extends Component {
                   default:
                     icon = 'user'
                 }
-                avatar = (<Icon className="social-icon" size={'large'} name={icon}/>)
+                avatar = (<Icon className="social-icon avatar" size={'large'} name={icon}/>)
               }
 
               return {
                 key: profile.id,
                 avatar: avatar,
-                text: profile.name,
+                text: profile.facebookPageName || profile.name,
                 value: profile.id,
+                socialNetwork: profile.socialNetwork.toLowerCase()
               }
             }
 
@@ -77,19 +94,10 @@ class SelectTeamAndProfile extends Component {
 
     return (
       <Menu.Item className="social-section">
-        {/* <Dropdown placeholder='Use Team'
-                  className='link item'
-                  selection
-                  value={teamId}
-                  options={teams}
-                  selectOnBlur={false}
-                  onChange={(e, data) => this.props.useTeamId(data.value)}
-        /> */}
-
         {profiles.map((profile, index)=> {
           const selected = (profile.value === this.props.socialId)
           return <div key={index}
-          className={'social-profile ' + (selected ? ' selected' : '')}
+          className={'social-profile ' + (selected ? 'selected ' : '')}
           onClick={(e) => this.props.useSocialProf(profile.value)}>
 
             <Popup className='social_profile_popup'
@@ -101,15 +109,6 @@ class SelectTeamAndProfile extends Component {
             />
           </div>;
         })}
-
-        {/* <Dropdown placeholder='Use social profile'
-          className='link item select-social-profile'
-          selection
-          value={socialId}
-          options={teamId ? profiles : []}
-          selectOnBlur={false}
-          onChange={(e, data) => this.props.useSocialProf(data.value)}
-        /> */}
       </Menu.Item>
     )
   }

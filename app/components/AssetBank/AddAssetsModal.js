@@ -4,15 +4,13 @@ import { Button, Modal, Segment, Transition, Dropdown, Grid } from 'semantic-ui-
 import Dropzone from 'react-dropzone'
 import Notification from '../Notification'
 import Loader from '../Loader'
-import PreviewImages from '../CreatePost/PreviewImages'
+import PreviewImages from './PreviewImages'
 import { mediaUrl } from '../../libraries/constants'
 import persist from '../../libraries/persist'
 import { createMediaTag, removeMediaTag } from './graphql/assetsMutations'
-import {getCategorybySocialIdQuery, assetsByCategory} from './graphql/AssetQueries';
+import {getCategorybySocialIdQuery, assetsByCategory} from './graphql/AssetQueries'
 
-if (process.env.BROWSER) {
-  require('./styles/addAssetModal.scss')
-}
+import './styles/addAssetModal.scss'
 
 const dropzoneStyle = {
   'border': '#ccc dashed',
@@ -41,30 +39,30 @@ class AddAssetsModal extends Component {
 
 
   onDrop = (files) => {
-    var uploadMedia = this.state.uploadMedia;
-    uploadMedia = uploadMedia.concat(files);
+    var uploadMedia = this.state.uploadMedia
+    uploadMedia = uploadMedia.concat(files)
     this.setState({ uploadMedia })
   }
 
   removeUploads = (e, index) => {
-    const uploadMedia = this.state.uploadMedia;
-    uploadMedia.splice(index.value,1);
-    this.setState({uploadMedia});
+    const uploadMedia = this.state.uploadMedia
+    uploadMedia.splice(index.value,1)
+    this.setState({uploadMedia})
   }
 
   selectCategory = (e, category) => {
     let selectedCategoryIds = this.state.selectedCategoryIds.filter(function(item) {
         return item !== category.value
-    });
+    })
     if(category.checked)
       selectedCategoryIds.push(category.value)
 
-    this.setState({ selectedCategoryIds });
+    this.setState({ selectedCategoryIds })
   }
 
   onSaveAssets = () => {
-    this.setState({savingAssets: true});
-    const { uploadMedia, selectedCategoryIds } = this.state;
+    this.setState({savingAssets: true})
+    const { uploadMedia, selectedCategoryIds } = this.state
 
     if( selectedCategoryIds.length > 0 && uploadMedia.length > 0)
     {
@@ -114,24 +112,24 @@ class AddAssetsModal extends Component {
   }
 
   onCreateTag = (mediaIds, categoryIds) => {
-    const { createTag } = this.props;
-    let media_count = 0;
+    const { createTag } = this.props
+    let media_count = 0
     let promises = mediaIds.map((mediaId) => createTag({mediaId, categoryIds}))
 
     Promise.all(promises).then((data) => {
       Notification.success('New Asset is added.')
-      this.setState({savingAssets: false});
-      this.props.closeModal();
+      this.setState({savingAssets: false})
+      this.props.closeModal()
     })
     .catch((e) => {
       Notification.error('Add assets Error')
-      this.setState({savingAssets: false});
-      this.props.closeModal();
+      this.setState({savingAssets: false})
+      this.props.closeModal()
     })
-    
+
   }
 
-  
+
 
   getSuggestions = (list) => {
     const { socialProfile } = this.props
@@ -140,13 +138,13 @@ class AddAssetsModal extends Component {
     if(!list) {
       return availableCategories.map((category, index) => {
         return { key: category.id, value: category.id, text: category.name }
-      });
+      })
     }
-    return availableCategories;
+    return availableCategories
   }
 
   handleChange = (e, {value}) => {
-    value = (value.length > 0) ? value : [this.props.selectedCategory];
+    value = (value.length > 0) ? value : [this.props.selectedCategory]
     this.setState({ selectedCategoryIds: value })
   }
 
@@ -159,11 +157,11 @@ class AddAssetsModal extends Component {
 
     const { selectedCategoryIds, visible, uploadMedia, savingAssets} = this.state
 
-    const isEnabled = selectedCategoryIds.length > 0 && uploadMedia.length > 0;
+    const isEnabled = selectedCategoryIds.length > 0 && uploadMedia.length > 0
 
-    const suggestions = this.getSuggestions();
+    const suggestions = this.getSuggestions()
 
-    return <Modal.Content>
+    return (<Modal.Content>
         <Segment.Group>
           <Segment>
             <div className='ui centered grid'>
@@ -192,7 +190,7 @@ class AddAssetsModal extends Component {
               onChange={this.handleChange}
             />
           </Segment>
-                
+
         </Segment.Group>
         <div className="action-btns">
           <Button positive loading={savingAssets} floated={'right'} disabled={!isEnabled} onClick={this.onSaveAssets}>
@@ -203,7 +201,7 @@ class AddAssetsModal extends Component {
           </Button>
         </div>
       </Modal.Content>
-    
+    )
   }
 }
 
@@ -239,4 +237,3 @@ export default compose(
     props: ({data: { socialProfile }}) => ({ socialProfile })
   })
 )(AddAssetsModal)
-

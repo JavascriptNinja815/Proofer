@@ -23,12 +23,14 @@ routes.add('forgot', '/app/forgot', '/app/forgot')
 routes.add('reset', '/app/reset/:resetToken', '/app/reset')
 
 // Content routes
+routes.add('onboarding', '/app/onboarding', '/app/onboarding')
 routes.add('dashboard', '/app/dashboard', '/app/dashboard')
 routes.add('posts', '/app/posts', '/app/posts')
 routes.add('calendar', '/app/calendar', '/app/calendar')
 routes.add('campaign', '/app/campaign', '/app/campaign')
 routes.add('assetbank', '/app/assetbank', '/app/assetbank')
 routes.add('manageusers', '/app/manageusers', '/app/manageusers')
+routes.add('unfollow', '/app/unfollow', '/app/unfollow')
 
 // ------------ ROUTES ---------------
 

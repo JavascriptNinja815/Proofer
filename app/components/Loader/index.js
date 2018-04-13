@@ -1,8 +1,6 @@
 import React from 'react'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 const Loader = () => (
   <div className='loader-wrapper'>

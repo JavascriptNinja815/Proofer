@@ -23,7 +23,7 @@ export default ComposedComponent => {
 
       // Run all graphql queries in the component tree
       // and extract the resulting data
-      if (!process.browser) {
+      if (!process.env.BROWSER) {
         if (context.res && context.res.finished) {
           // When redirecting, the response is finished.
           // No point in continuing to render
@@ -40,14 +40,19 @@ export default ComposedComponent => {
           </ApolloProvider>
         )
 
-        await getDataFromTree(app)
+        try {
+          await getDataFromTree(app)
+        } catch (error) {
+          console.log('getDataFromTree error: ', error)
+        }
 
         // Extract query data from the Apollo's store
-        const state = apollo.getInitialState()
+        const state = apollo.extract()
+        // console.log("State: ", state)
 
         serverState = {
           apollo: { // Make sure to only include Apollo's data state
-            data: state.data
+            data: state
           }
         }
       }

@@ -1,16 +1,14 @@
-import React from 'react'
+import React, {Component} from 'react'
 import {Grid, Button, Icon} from 'semantic-ui-react'
 import FilterSearchInput from '../FilterSearchInput'
 import AddAssets from '../AssetBank/AddAssets'
 import AssetsBank from '../AssetBank'
 import AddCategoryDropDown from '../Campaigns/AddCategoryDropdown'
+import onClickOutside from 'react-onclickoutside'
 // import ContentItem from '../Campaigns/ContentItem'
 // import CategoryList from '../Category'
-import CreatePost from '../CreatePost'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-}
+import './styles.scss'
 
 class RightPanel extends React.Component {
   constructor (props) {
@@ -161,14 +159,27 @@ class RightPanel extends React.Component {
           {contentBody}
         </div>
       </div>
-      <CreatePost
+      {/* <CreatePost
         modalOpen={modalOpen}
         socialId={this.props.socialId}
         selectedCategoryId={this.state.selectedCategory.id}
         onCloseModal={this.onCloseModal}
-      />
+      />*/}
     </Grid.Column>)
   }
 }
 
-export default RightPanel
+
+const clickOutsideConfig = {
+  handleClickOutside: (instance) => {
+    return instance.onClickOutside
+  }
+}
+
+const RightPanelWithClickHandler = onClickOutside(RightPanel, clickOutsideConfig)
+
+export default class Container extends Component {
+  render () {
+    return <RightPanelWithClickHandler outsideClickIgnoreClass='ignore-react-onclickoutside' {...this.props} />
+  }
+}

@@ -6,16 +6,13 @@ import Link from 'next/link'
 import { Grid, Header, Form, Button } from 'semantic-ui-react'
 import Notification from '../Notification'
 
-import redirect from '../../libraries/redirect'
 import { isEmail } from '../../libraries/validations'
 
 import forgotPassGql from './forgotPass.gql'
 import Logo from '../../static/images/proofer-logo.svg'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-  require('../NoAuth.scss')
-}
+import './styles.scss'
+import '../NoAuth.scss'
 
 class ForgotPassword extends Component {
   state = { email: '', loading: false, messageSent: false }
@@ -47,12 +44,12 @@ class ForgotPassword extends Component {
           Notification.error(errors[0].message)
         }
       } else {
-        if (data.emailSent) {
+        if (data.sendPasswordReset.emailSent) {
           Notification.success('Reset password link send to email')
 
           this.setState({loading: false, messageSent: true})
         } else {
-          this.setState({loading: false, messageSent: true})
+          this.setState({loading: false})
           Notification.error('Reset password link send error')
         }
       }
@@ -63,12 +60,12 @@ class ForgotPassword extends Component {
   }
 
   render () {
-    const { messageSent } = this.props
+    const { messageSent } = this.state
 
     if (!messageSent) {
       const { email } = this.state
       return (
-          <div className='no-auth-page'>
+          <div className='no-auth-page forgot-password'>
             <Grid centered id='no-auth-container'>
               <Grid.Row columns={1}>
                 <Grid.Column mobile={16} tablet={8} computer={8} largeScreen={6} widescreen={4}>
@@ -91,7 +88,7 @@ class ForgotPassword extends Component {
           </div>)
     } else {
       return (
-           <div className='no-auth-page'>
+           <div className='no-auth-page forgot-password'>
              <Grid centered id='no-auth-container'>
                <Grid.Row columns={1}>
                  <Grid.Column mobile={16} tablet={8} computer={8} largeScreen={6} widescreen={4}>

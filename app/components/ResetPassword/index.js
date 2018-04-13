@@ -13,13 +13,11 @@ import { isStringEmpty } from '../../libraries/validations'
 import resetPassGql from './resetPass.gql'
 import Logo from '../../static/images/proofer-logo.svg'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-  require('../NoAuth.scss')
-}
+import './styles.scss'
+import '../NoAuth.scss'
 
 class ResetPassword extends Component {
-  state = { password: '', password1: '' }
+  state = { password: '', password1: '', loading: false }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
@@ -29,13 +27,15 @@ class ResetPassword extends Component {
 
     const { password, password1 } = this.state
 
+    this.setState({loading: true})
+
     if (isStringEmpty(password)) {
       Notification.error('Password field can not be empty')
       return
     }
 
     if (password !== password1) {
-      Notification.error('Password does not matches')
+      Notification.error('Passwords do not match')
       return
     }
 
@@ -58,11 +58,12 @@ class ResetPassword extends Component {
           // logged in
           client.resetStore().then(() => {
             // Now redirect to the homepage
-            redirect({}, '/app/dashboard')
+            redirect({}, '/app/login')
           })
         }
       }
     }).catch((error) => {
+      this.setState({loading: false})
       Notification.error(error.message)
     })
   }
@@ -103,7 +104,7 @@ class ResetPassword extends Component {
                 <Form.Input required placeholder='New Password' type='password' name='password' min={6} value={password} onChange={this.handleChange} className="input" />
                 <Form.Input required placeholder='Confirm New Password' type='password' name='password1' min={6} value={password1} onChange={this.handleChange} className="input" />
 
-                <Button type='submit' className="submit-button field input">Reset Password</Button>
+                <Button type='submit' className="submit-button field input" loading={this.state.loading}>Reset Password</Button>
               </Form>
             </Grid.Column>
           </Grid.Row>

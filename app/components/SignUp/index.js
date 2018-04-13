@@ -4,7 +4,6 @@ import gql from 'graphql-tag'
 import getSignUpMessage from './signUpMessage'
 
 import Link from 'next/link'
-import Router from 'next/router'
 import {Grid, Header, Form, Button, Message} from 'semantic-ui-react'
 import Notification from '../Notification'
 
@@ -13,22 +12,19 @@ import { isEmail, isStringEmpty } from '../../libraries/validations'
 import createUserGql from './createUser.gql'
 import Logo from '../../static/images/proofer-logo.svg'
 
-if (process.env.BROWSER) {
-  require('./styles.scss')
-  require('../NoAuth.scss')
-}
+import './styles.scss'
+import '../NoAuth.scss'
 
 class SignUp extends Component {
-
   constructor(props) {
     super(props)
     this.state = {
       createdUser: this.props.createdUser,
       firstname: '',
       lastname: '',
+      name: '',
       email: '',
       password: '',
-      password2: '',
       loading: false,
       userMessage: getSignUpMessage(this.props.query.message),
     }
@@ -36,23 +32,26 @@ class SignUp extends Component {
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
+  handleNameChange = (e, { name, value }) => {
+    let [firstname, ...lastname] = value.trim().split(" ")
+    firstname = firstname.trim()
+    lastname = lastname.join(" ").trim()
+    this.setState({ firstname, lastname, name: value})
+  }
+
   handleSubmit = (event) => {
     event.preventDefault()
     event.stopPropagation()
 
-    const { firstname, lastname, email, password } = this.state
+    const { firstname, lastname, name, email, password } = this.state
 
     if (!isEmail(email)) {
       Notification.error('Please enter a valid email address')
       return
     }
 
-    if (isStringEmpty(firstname)) {
+    if (isStringEmpty(name)) {
       Notification.error('First name field can not be empty')
-      return
-    }
-    if (isStringEmpty(lastname)) {
-      Notification.error('Last name field can not be empty')
       return
     }
     if (isStringEmpty(password)) {
@@ -91,12 +90,12 @@ class SignUp extends Component {
     if (createdUser) {
       return (
         <div className='no-auth-page'>
-          <Grid centered id='no-auth-container'>
+          <Grid centered id='no-auth-container' verticalAlign="middle">
             <Grid.Row columns={1}>
-              <Grid.Column mobile={16} tablet={8} computer={8} largeScreen={6} widescreen={4}>
+              <Grid.Column mobile={16} tablet={12} computer={12} largeScreen={8} widescreen={4}>
                 <Header className="custom-header">
                   <Logo width='50%' className='align-center custom-image-style'/>
-                  Create a new Account
+                  Sign Up
                 </Header>
                 <h3 className='title-header'>
                   Please, check your email to activate your account.
@@ -111,7 +110,7 @@ class SignUp extends Component {
           </Grid>
         </div>)
     } else {
-      const { firstname, lastname, email, password, password2 } = this.state
+      const { firstname, lastname, name, email, password } = this.state
       return (
           <div className='no-auth-page'>
             <Grid centered id='no-auth-container'>
@@ -123,16 +122,14 @@ class SignUp extends Component {
                   </Message>
                   }
                   <Header className="custom-header-long">
-                    <Logo width='80%' className='align-center custom-image-style' />
-                    Create a new Account
+                    <Logo width='70%' className='align-center custom-image-style' />
+                    Sign Up
                   </Header>
-                  <Form onSubmit={this.handleSubmit.bind(this)} className='input-form'>
-                    <Form.Input required  placeholder='First Name' type='text' name='firstname' value={firstname} onChange={this.handleChange}  className="input" />
-                    <Form.Input required  placeholder='Last Name' type='text' name='lastname' value={lastname} onChange={this.handleChange} className="input"/>
-                    <Form.Input required  placeholder='Email' type='text' name='email' value={email} onChange={this.handleChange} className="input" />
-                    <Form.Input required  placeholder='Password' type='password' name='password' min={6} value={password} onChange={this.handleChange} className="input"/>
-                    <Form.Input required  placeholder='Repeat Password' type='password' name='password2' min={6} value={password2} onChange={this.handleChange} className="input"/>
-                    <Button type='submit'  className="submit-button field input" loading={this.state.loading}>Sign Up</Button>
+                  <Form onSubmit={this.handleSubmit.bind(this)} className='input-form' autoComplete="false">
+                    <Form.Input required label='Name' type='text' name='name' value={name} onChange={this.handleNameChange} className="input"/>
+                    <Form.Input required  label='Email Address' type='text' name='email' value={email} onChange={this.handleChange} className="input" />
+                    <Form.Input required  label='Password' type='password' name='password' min={6} value={password} onChange={this.handleChange} className="input"/>
+                    <Button type='submit'  className="submit-button field input" loading={this.state.loading}>CREATE ACCOUNT</Button>
                     {createdUser &&
                       <div style={{ color: '#006B00', padding: '10px' }}>
                           User created successfully!

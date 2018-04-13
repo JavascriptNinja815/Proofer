@@ -1,21 +1,37 @@
 import React from 'react'
-import {Image} from 'semantic-ui-react'
 import {getCorrectHours} from '../../../libraries/helpers'
 
-const LeftSide = ({slotValueTime}) => {
-  let sunIcon = '/static/images/sun.png'
-  if (slotValueTime < 720) { // Before mid-day
-    sunIcon = '/static/images/sunrise.png'
-  }
-  if (slotValueTime > 1080) { // After 6PM
-    sunIcon = '/static/images/sunset.png'
+import Sun from '../../../static/images/sun.svg'
+import Afternoon from '../../../static/images/afternoon.svg'
+import Morning from '../../../static/images/morning.svg'
+import Night from '../../../static/images/night.svg'
+
+const LeftSide = ({dateTime}) => {
+  let sunIcon = null
+  const slotValueTime = (dateTime.getHours() * 60) + dateTime.getMinutes()
+  switch (true) {
+    case slotValueTime < 240: // Before 4am:
+      sunIcon = <Night />
+      break
+    case slotValueTime < 720: // Before mid-day
+      sunIcon = <Morning />
+      break
+    case slotValueTime < 1020: // Before 5PM
+      sunIcon = <Sun />
+      break
+    case slotValueTime < 1200: // Before 8PM
+      sunIcon = <Afternoon />
+      break
+    default: // After 8PM
+      sunIcon = <Night />
+      break
   }
 
   return (
     <div className='post-item-datetime'>
-      <Image inline src={sunIcon} />
+      {sunIcon}
       <div className='date-time-label'>
-        {getCorrectHours(slotValueTime)}
+        {getCorrectHours(slotValueTime, dateTime)}
       </div>
     </div>
   )

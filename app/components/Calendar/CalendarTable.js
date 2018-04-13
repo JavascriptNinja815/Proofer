@@ -1,8 +1,17 @@
 import React from 'react'
 import { Table, Button, Icon } from 'semantic-ui-react'
+import moment from 'moment';
 
-import { months } from '../../libraries/constants'
+import { months, days } from '../../libraries/constants'
 import CalendarCell from './CalendarCell'
+
+import TopPanel from '../TopPanel'
+import Stats from '../TopPanel/Stats'
+import { Dropdown } from 'semantic-ui-react'
+import FollowersCount from '../TopPanel/FollowersCount';
+import AggregateCounts from '../TopPanel/AggregateCounts';
+
+
 
 class CalendarTable extends React.Component {
   constructor (props) {
@@ -17,9 +26,12 @@ class CalendarTable extends React.Component {
       currentWeek: currentWeek,
       currentDate: currentDate,
       availableDates: [],
-      wholeDayEnable: false
+      wholeDayEnable: false,
+      platformType: ''
     }
   }
+
+  platformHandler = (platformType) => this.setState({platformType});
 
   getDaysInWeek = (current) => {
     const week = []
@@ -128,12 +140,94 @@ class CalendarTable extends React.Component {
     return weeknum
   }
 
+  calculateStats = (compareDates) => {
+    const { socialId, slots} = this.props
+
+    let availablePosts = Object.keys(slots).map(slot => Object.keys(slots[slot]).map(c => slots[slot][c].contentSchedules && slots[slot][c].contentSchedules.length).filter( n => n));
+    availablePosts = availablePosts.filter(n => n.length > 0 ? n: false)
+    availablePosts = [].concat.apply([], availablePosts).reduce((a, b) => a + b, 0);
+    return [
+        {
+          'value' : availablePosts,
+          'label' : 'posts'
+        },
+        <AggregateCounts key='aggregates' socialId={socialId} compareDates={compareDates} />,
+        <FollowersCount key='followers' socialId={socialId} compareDates={compareDates} />
+      ];
+  }
+
   render () {
     const {socialId, onCalendarTableUpdate, onCellClicked, onSlotsUpdate, slots, categories, catId, onRowDel, onRowAdd} = this.props
-    const {currentDate, currentMonth} = this.state
+    const {currentDate, currentMonth, platformType} = this.state
     const availableDates = this.getDaysInWeek(currentDate)
+
+    if (process.env.BROWSER) {
+      if (window.innerWidth < 600) {
+        return (<div>
+          {/*<div className='calendar-weeks'>
+            <div className='weeks-wrapper'>
+              <div className='weeks-date'>
+                <Icon name='caret left' onClick={() => this.onDayChange(false)} />
+                <span>{`${days[currentDate.getDay()]}, ${currentDate.getDate() + 'th '}`}</span>
+                <Icon name='caret right' onClick={() => this.onDayChange(true)} />
+              </div>
+            </div>
+          </div>*/}
+          <Table className='calendar-table' basic='very' celled collapsing>
+            <Table.Body>
+              {Object.keys(slots).map((index) => <Table.Row className='calendar-row' key={index}>
+                <CalendarCell
+                  onCalendarTableUpdate={onCalendarTableUpdate}
+                  onSlotsUpdate={onSlotsUpdate}
+                  onDelEvent={onRowDel}
+                  slots={slots}
+                  slot={slots[index]}
+                  type='time'
+                  cellTime={index}
+                  socialId={socialId}
+                />
+                <CalendarCell
+                  key={index}
+                  onCalendarTableUpdate={onCalendarTableUpdate}
+                  onCellClicked={onCellClicked}
+                  onSlotsUpdate={onSlotsUpdate}
+                  type='day'
+                  slots={slots}
+                  categories={categories}
+                  day={slots[index][currentDate.getDay()]}
+                  obj={slots[index][currentDate.getDay()]}
+                  cellTime={index}
+                  socialId={socialId}
+                  catId={catId}
+                  mobile
+                />
+              </Table.Row>)
+              }
+            </Table.Body>
+          </Table>
+          <Button
+            onClick={onRowAdd}
+            positive
+          >
+            <Icon name='plus' />Add
+          </Button>
+        </div>)
+      }
+    }
+
+    const compareDates = {
+      currentWeek: {
+        dateStart: moment(availableDates[0]).format('YYYY-MM-DD'),
+        dateEnd: moment(availableDates[6]).format('YYYY-MM-DD')
+      },
+      compareWeek: {
+        dateStart: moment(availableDates[0]).subtract(7, "days").format('YYYY-MM-DD'),
+        dateEnd: moment(availableDates[6]).subtract(7, "days").format('YYYY-MM-DD')
+      }
+    }
+
     return (<div>
-      <div className='calendar-weeks'>
+      {/*<div className='calendar-weeks'>
         <div className='weeks-wrapper'>
           <div className='weeks-actions' />
           <div className='weeks-date'>
@@ -148,38 +242,38 @@ class CalendarTable extends React.Component {
             <Button className='success empty'>Autocomplete</Button>
           </div>
         </div>
-      </div>
+      </div>*/}
       <Table className='calendar-table' basic='very' celled collapsing>
         <Table.Header className='calendar-header'>
           <Table.Row textAlign='center'>
             <Table.HeaderCell />
             <Table.HeaderCell>
               <div className='weekday'>M</div>
-              <div className='digit'>{availableDates[0].getDate()}</div>
+              {/*<div className='digit'>{availableDates[0].getDate()}</div>*/}
             </Table.HeaderCell>
             <Table.HeaderCell>
               <div className='weekday'>T</div>
-              <div className='digit'>{availableDates[1].getDate()}</div>
+              {/*<div className='digit'>{availableDates[1].getDate()}</div>*/}
             </Table.HeaderCell>
             <Table.HeaderCell>
               <div className='weekday'>W</div>
-              <div className='digit'>{availableDates[2].getDate()}</div>
+              {/*<div className='digit'>{availableDates[2].getDate()}</div>*/}
             </Table.HeaderCell>
             <Table.HeaderCell>
               <div className='weekday'>T</div>
-              <div className='digit'>{availableDates[3].getDate()}</div>
+              {/*<div className='digit'>{availableDates[3].getDate()}</div>*/}
             </Table.HeaderCell>
             <Table.HeaderCell>
               <div className='weekday'>F</div>
-              <div className='digit'>{availableDates[4].getDate()}</div>
+              {/*<div className='digit'>{availableDates[4].getDate()}</div>*/}
             </Table.HeaderCell>
             <Table.HeaderCell>
               <div className='weekday'>S</div>
-              <div className='digit'>{availableDates[5].getDate()}</div>
+              {/*<div className='digit'>{availableDates[5].getDate()}</div>*/}
             </Table.HeaderCell>
             <Table.HeaderCell>
               <div className='weekday'>S</div>
-              <div className='digit'>{availableDates[6].getDate()}</div>
+              {/*<div className='digit'>{availableDates[6].getDate()}</div>*/}
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
@@ -213,12 +307,24 @@ class CalendarTable extends React.Component {
           }
         </Table.Body>
       </Table>
-      <Button
-        onClick={onRowAdd}
-        positive
-      >
-        <Icon name='plus' />Add
-      </Button>
+      <Button onClick={onRowAdd} positive ><Icon name='plus' />Add</Button>
+      <TopPanel
+        leftBlock={
+          <Dropdown
+            ref='platform_dropdown'
+            search
+            selection
+            placeholder="All Platforms:"
+            options={[]}
+            value={platformType}
+            onChange={(event, {value}) => this.platformHandler(value)}
+          />
+        }
+        rightBlock=''
+        middleBlock={
+          <Stats stats={this.calculateStats(compareDates)}/>
+        }
+      />
     </div>)
   }
 }

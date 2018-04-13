@@ -3,15 +3,12 @@ import { graphql, compose } from 'react-apollo'
 import { Button, Popup, Icon, Dropdown } from 'semantic-ui-react'
 import Dropzone from 'react-dropzone'
 import Notification from '../Notification'
-import { mediaUrl } from '../../libraries/constants'
-import persist from '../../libraries/persist'
 import Loader from '../Loader'
 import { createMediaTag, removeMediaTag } from './graphql/assetsMutations'
 import {getAssets, getCategorybySocialIdQuery} from './graphql/AssetQueries'
+import uploadMedia from './uploadMediaMethod'
 
-if (process.env.BROWSER) {
-  require('./styles/addAssets.scss')
-}
+import './styles/addAssets.scss'
 
 class AddAssets extends Component {
   constructor (props) {
@@ -19,11 +16,12 @@ class AddAssets extends Component {
     this.state = {
       isOpen: false,
       newAsset: null,
-      tags: [],
+      tags: props.categoryIds || [],
       suggestions: [],
       uploading: false
     }
   }
+
   onDrop = (file) => {
     this.setState({
       newAsset: file[0]
@@ -45,7 +43,7 @@ class AddAssets extends Component {
     })
 
     if (newAsset) {
-      this.uploadMedia([newAsset]).then((mediaIds) => {
+      uploadMedia([newAsset]).then((mediaIds) => {
         const mediaId = mediaIds[0]
         const categoryIds = this.state.tags
         this.props.createTag({mediaId, categoryIds})
@@ -57,6 +55,7 @@ class AddAssets extends Component {
             uploading: false,
             isOpen: !this.state.isOpen
           })
+          this.props.onSelectAsset(data.data.editMediumAddCategories.media)
         })
         .catch((e) => {
           console.log(e)
@@ -66,54 +65,14 @@ class AddAssets extends Component {
     }
   }
 
-  uploadMedia = (images) => {
-    const mediaIds = []
-    let sendCount = 0
-    let receiveCount = 0
-
-    return new Promise((resolve, reject) => {
-      images.map((file, index) => {
-        const authorization = 'Bearer' + persist.willGetAccessToken()
-        const teamGID = persist.willGetTeamId()
-
-        sendCount++
-
-        const mediaFormData = new FormData()
-        mediaFormData.append('mediaFile', file)
-
-        const xhr = new XMLHttpRequest()
-        xhr.open('post', mediaUrl, true)
-        xhr.setRequestHeader('authorization', authorization)
-        xhr.setRequestHeader('x-proof-teamid', teamGID)
-
-        xhr.onload = function () {
-          if (this.status === 200) {
-            receiveCount++
-
-            const oneMediaId = JSON.parse(this.response)['media_ids']
-            mediaIds.push(oneMediaId[0])
-            if (sendCount !== 0 && receiveCount !== 0 && sendCount === receiveCount && receiveCount === images.length) {
-              resolve(mediaIds)
-            }
-          } else {
-            reject(this.statusText)
-          }
-        }
-        xhr.send(mediaFormData)
-
-        return true
-      })
-    })
-  }
-
   handleChange = (e, { value }) => {
-    value = (value.length > 0) ? value : [this.props.selectedCategory.id];
+    value = (value.length > 0) ? value : [this.props.selectedCategory.id]
     this.setState({ tags: value })
   }
 
   onCategoryChange = (e, value) => {
-    const categories = this.getSuggestions(true);
-    this.props.onCategoryChange(categories.filter((category) => category.id === value.value )[0]);
+    const categories = this.getSuggestions(true)
+    this.props.onCategoryChange(categories.filter((category) => category.id === value.value )[0])
   }
 
   getSuggestions = (list) => {
@@ -123,20 +82,21 @@ class AddAssets extends Component {
     if(!list) {
       return availableCategories.map((category, index) => {
         return { key: category.id, value: category.id, text: category.name }
-      });
+      })
     }
-    return availableCategories;
+    return availableCategories
   }
+
   renderDropdownView = () => {
     const { socialProfile } = this.props
     const fetchedArray = !socialProfile ? [] : socialProfile.categories
     if (fetchedArray.length === 0) {
       return <Loader />
     }
-    const suggestions = this.getSuggestions();
+    const suggestions = this.getSuggestions()
 
     return (
-      <div className='assets-dropdown-content'>
+      <div className='assets-dropdown-content ignore-react-onclickoutside'>
         <div className='assets-dropdown-inner-content'>
           <Dropzone
             ref='dropzone'
@@ -165,7 +125,7 @@ class AddAssets extends Component {
         </div>
         <div className='add-assets-buttons'>
           <Button onClick={this.handleClose}>Cancel</Button>
-          <Button color='green' disabled={this.state.uploading} className='savecategory-button' onClick={this.onSaveAsset}>{this.state.uploading ? <Loader /> : 'Save Asset'}</Button>
+          <Button disabled={this.state.uploading} className='savecategory-button' onClick={this.onSaveAsset}>{this.state.uploading ? <Loader /> : 'Save Asset'}</Button>
         </div>
       </div>
     )
@@ -179,7 +139,7 @@ class AddAssets extends Component {
     }
 
     const suggestions = this.getSuggestions()
-    return (<span>
+    return (<div>
       {selectedCategory && <Dropdown
         key={'dropdown'}
         placeholder='Select category'
@@ -190,18 +150,24 @@ class AddAssets extends Component {
         options={suggestions}
         onChange={this.onCategoryChange}
       />}
-      <Popup
-        key={'popup'}
-        open={this.state.isOpen}
-        onClose={this.handleClose}
-        onOpen={this.handleOpen}
-        className='add-assets'
-        trigger={<Button className='success empty'>Upload Image</Button>}
-        content={this.renderDropdownView()}
-        on='click'
-        position='bottom right'
-      />
-    </span>)
+      {this.props.simpleUpload ?
+        <Dropzone className='add-assets-dropzone' onDrop={this.props.onUpload}>
+          <Button className='success empty'>Upload Image</Button>
+        </Dropzone>
+        :
+        <Popup
+          key={'popup'}
+          open={this.state.isOpen}
+          onClose={this.handleClose}
+          onOpen={this.handleOpen}
+          className='add-assets'
+          trigger={<Button className='success empty'>Upload Image</Button>}
+          content={this.renderDropdownView()}
+          on='click'
+          position='bottom right'
+        />
+      }
+    </div>)
   }
 }
 
@@ -220,7 +186,7 @@ export default compose(
             refetchQueries: [{
               query: getAssets,
               variables: {
-                categoryIds: ownProps.selectedCategory ? [ownProps.selectedCategory.id] : []
+                categoryIds: ownProps.categoryIds || (ownProps.selectedCategoryId && ownProps.selectedCategory.id) || []
               }
             }]
           })
